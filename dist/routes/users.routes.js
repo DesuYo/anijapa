@@ -10,11 +10,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
 const sql_service_1 = require("../services/sql.service");
-const db = new sql_service_1.PostgresService(process.env.PG_URL);
+const users = new sql_service_1.Table(process.env.PG_URL, 'users');
 exports.default = express_1.Router()
     .post('/signup', (req, res) => __awaiter(this, void 0, void 0, function* () {
     try {
-        const user = yield db.insert('users', req.body);
+        const user = yield users.insert(req.body);
         return res.status(201).json(user);
     }
     catch (error) {

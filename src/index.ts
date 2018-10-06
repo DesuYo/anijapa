@@ -19,6 +19,6 @@ express()
   .use((req: express.Request, res: express.Response) => {
     res.status(404).end()
   })
-  .listen(process.env.PORT, () => { 
+  .listen(777, () => { 
     console.log('Listen listen')
   })

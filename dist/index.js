@@ -19,7 +19,7 @@ express()
     .use((req, res) => {
     res.status(404).end();
 })
-    .listen(process.env.PORT, () => {
+    .listen(777, () => {
     console.log('Listen listen');
 });
 //# sourceMappingURL=index.js.map
