@@ -2,6 +2,7 @@
   "name": "anijapa",
   "version": "1.0.0",
   "description": "",
+<<<<<<< HEAD
   "main": "dist/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -9,6 +10,12 @@
     "watch-node": "nodemon dist/server.js",
     "watch": "concurrently -k -p \"[{name}]\" -n \"TypeScript, Node\" -c \"yello.bold, cyan.bold\" \"npm run watch-ts\" \"npm run watch-node\""
 
+=======
+  "scripts": {
+    "watch-ts": "tsc -w",
+    "watch-node": "nodemon dist/server.js",
+    "watch": "concurrently -k -p \"[{name}]\" -n \"TypeScript, Node\" -c \"yello.bold, cyan.bold\" \"npm run watch-ts\" \"npm run watch-node\""
+>>>>>>> 1046561eba945e3d863c02954b0a4d42d847aa8d
   },
   "keywords": [],
   "author": "",
@@ -24,6 +31,10 @@
     "@types/pg": "^7.4.10",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.18.3",
+<<<<<<< HEAD
+=======
+    "concurrently": "^4.0.1",
+>>>>>>> 1046561eba945e3d863c02954b0a4d42d847aa8d
     "cors": "^2.8.4",
     "dotenv": "^6.0.0",
     "express": "^4.16.3",

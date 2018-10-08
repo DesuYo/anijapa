@@ -9,6 +9,7 @@ import routes from './routes/users.routes'
 
 dotenv.config()
 const { PORT } = process.env
+const test = 'ROFL'
 
 const app = express()
   .set('view engine', 'pug')
