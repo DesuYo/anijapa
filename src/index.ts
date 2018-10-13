@@ -9,14 +9,14 @@ import errorsHandler from './services/errors.handler'
 
 dotenv.config()
 
-express()
+export default express()
   .set('view engine', 'pug')
   .set('views', join(__dirname, 'public', 'views'))
   .use(morgan('dev'))
   .use(cors())
   .use(bodyParser.json())
   .use(bodyParser.urlencoded({ extended: true }))
-  .use(routes)
+  .use('/api', routes)
   .use((req: express.Request, res: express.Response) => {
     res
       .status(404)

@@ -9,16 +9,33 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
-const sql_service_1 = require("../services/sql.service");
-const db = new sql_service_1.PostgresService(process.env.PG_URL);
+const auth_handler_1 = require("../services/auth.handler");
+const validations_handler_1 = require("../services/validations.handler");
+const users_schema_1 = require("../validations/users.schema");
+const users_model_1 = require("../models/users.model");
 exports.default = express_1.Router()
-    .post('/signup', (req, res) => __awaiter(this, void 0, void 0, function* () {
+    .post('/signup', validations_handler_1.default(users_schema_1.createUserSchema), (req, res, next) => __awaiter(this, void 0, void 0, function* () {
     try {
-        const user = yield db.insert('users', req.body);
-        return res.status(201).json(user);
+        const user = new users_model_1.default(req.body);
+        return res
+            .status(201)
+            .json(yield user.save());
     }
     catch (error) {
-        return res.status(500).json(error);
+        next(error);
+    }
+}))
+    .patch('/me', auth_handler_1.default('member'), validations_handler_1.default(users_schema_1.patchUserSchema), (req, res, next) => __awaiter(this, void 0, void 0, function* () {
+    try {
+        const user = yield users_model_1.default
+            .updateOne({ id: req.query.id }, { $set: req.body })
+            .exec();
+        return res
+            .status(200)
+            .json(user);
+    }
+    catch (error) {
+        next(error);
     }
 }));
 //# sourceMappingURL=users.routes.js.map
