@@ -24,12 +24,13 @@ module.exports = (sample) => {
                     key: err.context.key,
                     message: err.message
                 })));
-            else {
-                req.body = value;
-                return next();
-            }
+            req.body = value;
+            return next();
         }
         catch (error) {
+            res
+                .status(500)
+                .json(error);
         }
     });
 };

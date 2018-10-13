@@ -1,30 +1,42 @@
 import { Router, Request, Response } from 'express'
-<<<<<<< HEAD
-import { PostgresService } from '../services/sql.service'
-
-const db = new PostgresService(process.env.PG_URL)
-
-export default Router()
-  .post('/signup', async (req: Request, res: Response): Promise<object> => {
-    try {
-      const user = await db.insert('users', req.body)
-=======
-import { Table } from '../services/sql.service'
-
-const users = new Table(process.env.PG_URL, 'users')
+import authHandler from '../services/auth.handler'
+import validationsHandler from '../services/validations.handler'
+import { createUserSchema, patchUserSchema } from '../validations/users.schema'
+import Users from '../models/users.model'
 
 export default Router()
-  .post('/signup', async (req: Request, res: Response) => {
-    try {
-      const user = await users.insert(req.body)
->>>>>>> 1046561eba945e3d863c02954b0a4d42d847aa8d
-      return res.status(201).json(user)
-    } catch (error) {
-      return res.status(500).json(error)
+  .post(
+    '/signup', 
+    validationsHandler(createUserSchema), 
+    async (req: Request, res: Response, next: Function) => {
+      try {
+        const user = new Users(req.body)
+        return res
+          .status(201)
+          .json(await user.save())
+        
+      } catch (error) {
+        next(error)
+      }
     }
-<<<<<<< HEAD
-  })
-=======
-  })
+  )
 
->>>>>>> 1046561eba945e3d863c02954b0a4d42d847aa8d
+  .patch(
+    '/me',
+    authHandler('member'),
+    validationsHandler(patchUserSchema),
+    async (req: Request, res: Response, next: Function) => {
+      try {
+        const user = await Users
+          .updateOne({ id: req.query.id }, { $set: req.body })
+          .exec()
+       
+        return res
+          .status(200)
+          .json(user)
+        
+      } catch (error) {
+        next(error)
+      }
+    }
+  )

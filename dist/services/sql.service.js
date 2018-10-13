@@ -9,83 +9,59 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const pg = require("pg");
-class Table {
-    constructor(pgURL, tableName) {
+class PostgresService {
+    constructor(pgURL) {
         this._pgClient = new pg.Client(pgURL);
-        this._name = tableName;
     }
     _convertData(data) {
-        let output = [];
+        let keys = [], values = [];
         for (let key in data) {
-            output.push(key);
-            output.push(data[key]);
+            keys.push(key);
+            values.push(data[key]);
         }
-        return output;
+        return [].concat(keys, values);
     }
-    insert(data) {
+    insert(table, data) {
         return __awaiter(this, void 0, void 0, function* () {
-            try {
-                let values = this._convertData(data);
-                let exchanges = [];
-                for (let i = 0; i < values.length; i++) {
-                    exchanges.push(`$${i + 2}`);
-                }
-                const queryString = `
-        INSERT INTO $1 ( ${exchanges.filter((_, i) => i % 2 == 0).join(', ')} ) 
-        VALUES ( ${exchanges.filter((_, i) => i % 2 != 0).join(', ')} );`;
-                console.log(`QUERY: ${queryString}`);
-                yield this._pgClient.connect();
-                return (yield this._pgClient.query({
-                    text: queryString,
-                    values: [this._name, ...values]
-                })).rows[0];
-            }
-            catch (error) {
-                throw error;
-            }
-        });
-    }
-    patch(data, where) {
-        return __awaiter(this, void 0, void 0, function* () {
-            let setValues = this._convertData(data);
-            let whereValues = this._convertData(where);
-            let setLength = setValues.length, valuesLength = setLength + whereValues.length;
+            let params = this._convertData(data);
             let exchanges = [];
-            for (let i = 0; i < valuesLength; i += 2) {
-                exchanges.push(`$${i + 2} = $${i + 3}`);
-            }
-            const queryString = `
-      UPDATE $1 SET ${exchanges.slice(0, setLength).join(', ')}
-      WHERE ( ${exchanges.slice(setLength, valuesLength).join(' AND ')} );`;
-            console.log(queryString);
-            yield this._pgClient.connect();
+            const length = params.length;
+            for (let i = 0; i < length; i++)
+                exchanges.push(`$${i + 2}`);
             return (yield this._pgClient.query({
-                text: queryString,
-                values: [this._name, ...setValues, ...whereValues]
+                text: `INSERT INTO $1 ( ${exchanges.slice(0, length / 2).join(',')} ) 
+        VALUES ( ${exchanges.slice(length / 2, length).join(',')} );`,
+                values: [table, ...params]
             })).rows[0];
         });
     }
-    filter(where) {
+    patch(table, id, data) {
         return __awaiter(this, void 0, void 0, function* () {
-            let whereValues = this._convertData(where);
+            let params = this._convertData(data);
             let exchanges = [];
-            for (let i = 0; i < whereValues.length; i += 2) {
-                exchanges.push(`$${i + 2} = $${i + 3}`);
-            }
-            const queryString = `
-      SELECT * FROM $1 WHERE ${exchanges.join(' AND ')} );`;
-            console.log(queryString);
-            yield this._pgClient.connect();
+            const length = params.length;
+            for (let i = 0; i < length; i++)
+                exchanges.push(`$${i + 2}`);
             return (yield this._pgClient.query({
-                text: queryString,
-                values: [this._name, ...whereValues]
+                text: `UPDATE $1 SET ( ${exchanges.join(',')} )
+        WHERE $${length + 2};`,
+                values: [table, ...params, id]
+            })).rows[0];
+        });
+    }
+    filter(table, data) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let params = this._convertData(data);
+            let exchanges = [];
+            const length = params.length;
+            for (let i = 0; i < length; i += 2)
+                exchanges.push(`$${i + 2} = $${i + 3}`);
+            return (yield this._pgClient.query({
+                text: `SELECT * FROM $1 WHERE ${exchanges.join(' AND ')} );`,
+                values: [table, ...params]
             })).rows;
         });
     }
-    remove(where) {
-        return __awaiter(this, void 0, void 0, function* () {
-        });
-    }
 }
-exports.Table = Table;
+exports.PostgresService = PostgresService;
 //# sourceMappingURL=sql.service.js.map

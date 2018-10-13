@@ -1,17 +1,15 @@
 import * as dotenv from 'dotenv'
-import * as http from 'http'
 import * as express from 'express'
 import * as bodyParser from 'body-parser'
 import * as cors from 'cors'
 import * as morgan from 'morgan'
 import { join } from 'path'
 import routes from './routes/users.routes'
+import errorsHandler from './services/errors.handler'
 
 dotenv.config()
-const { PORT } = process.env
-const test = 'ROFL'
 
-const app = express()
+express()
   .set('view engine', 'pug')
   .set('views', join(__dirname, 'public', 'views'))
   .use(morgan('dev'))
@@ -20,13 +18,10 @@ const app = express()
   .use(bodyParser.urlencoded({ extended: true }))
   .use(routes)
   .use((req: express.Request, res: express.Response) => {
-    res.status(404).end()
+    res
+      .status(404)
+      .end()
   })
+  .use(errorsHandler)
+  .listen(process.env.PORT, () => console.log(`I'm gonna poop on the plate, bratok...`))
 
-http 
-  .createServer(app)
-  .listen(PORT, (err: any) => {
-    if (!err) {
-      console.log(`SERVER RUNS ON PORT ${PORT}`)
-    }
-  })

@@ -2,20 +2,12 @@
   "name": "anijapa",
   "version": "1.0.0",
   "description": "",
-<<<<<<< HEAD
   "main": "dist/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest src/test",
     "watch-ts": "tsc -w",
     "watch-node": "nodemon dist/server.js",
     "watch": "concurrently -k -p \"[{name}]\" -n \"TypeScript, Node\" -c \"yello.bold, cyan.bold\" \"npm run watch-ts\" \"npm run watch-node\""
-
-=======
-  "scripts": {
-    "watch-ts": "tsc -w",
-    "watch-node": "nodemon dist/server.js",
-    "watch": "concurrently -k -p \"[{name}]\" -n \"TypeScript, Node\" -c \"yello.bold, cyan.bold\" \"npm run watch-ts\" \"npm run watch-node\""
->>>>>>> 1046561eba945e3d863c02954b0a4d42d847aa8d
   },
   "keywords": [],
   "author": "",
@@ -27,19 +19,17 @@
     "@types/express": "^4.16.0",
     "@types/joi": "^13.6.0",
     "@types/jsonwebtoken": "^7.2.8",
+    "@types/mongoose": "^5.2.19",
     "@types/morgan": "^1.7.35",
     "@types/pg": "^7.4.10",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.18.3",
-<<<<<<< HEAD
-=======
-    "concurrently": "^4.0.1",
->>>>>>> 1046561eba945e3d863c02954b0a4d42d847aa8d
     "cors": "^2.8.4",
     "dotenv": "^6.0.0",
     "express": "^4.16.3",
     "joi": "^13.7.0",
     "jsonwebtoken": "^8.3.0",
+    "mongoose": "^5.3.3",
     "morgan": "^1.9.1",
     "pg": "^7.5.0",
     "typescript": "^3.1.1"
