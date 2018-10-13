@@ -4,7 +4,7 @@ import * as bodyParser from 'body-parser'
 import * as cors from 'cors'
 import * as morgan from 'morgan'
 import { join } from 'path'
-import routes from './routes/users.routes'
+import routes from './routes/index.routes'
 import errorsHandler from './services/errors.handler'
 
 dotenv.config()
