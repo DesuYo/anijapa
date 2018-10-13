@@ -1,12 +1,17 @@
 import { JsonWebTokenError, TokenExpiredError } from 'jsonwebtoken'
 import { ValidationError, ValidationErrorItem } from 'joi'
 import { Request, Response } from 'express'
+import { PermissionError } from './auth.handler'
 
 export default (error: any, req: Request, res: Response, next: Function) => {
   try {
     switch (true) {
       case error instanceof JsonWebTokenError || error instanceof TokenExpiredError: return res
         .status(401)
+        .json({ error })
+
+      case error instanceof PermissionError: return res
+        .status(403)
         .json({ error })
         
       case error.isJoi: return res
