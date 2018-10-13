@@ -13,4 +13,16 @@ describe('POST /api/users/signup', () => {
       .expect(400)
       .end(done)
   })
+
+  /*it('test valid request body', done => {
+    request(app)
+      .post('/api/users/signup')
+      .send({
+        username: 'senpai_desu',
+        email: 'olehdesu@gmail.com',
+        password: 'qwerTY12345'
+      })
+      .expect(201)
+      .end(done)
+  })*/
 })
