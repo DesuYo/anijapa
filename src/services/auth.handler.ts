@@ -19,15 +19,25 @@ export default (role: string): RequestHandler => {
   return async (req: Request, res: Response, next: Function) => {
     try {
       const [ type, token ] = req.headers.authorization.split(' ')
+
       if (type !== 'Bearer')
-        throw new JsonWebTokenError('Bearer token is required!')
+        next(new JsonWebTokenError('Bearer token is required!'))
+
       const { id }: any = verify(token, process.env.JWT_SECRET || '難しい鍵')
-      const user = (await Users.findById(id)).toObject()
+      const doc = await Users
+        .findById(id)
+        .select('-password')
+      const user = doc.toObject()
+
       if (!user) 
-        throw new JsonWebTokenError('User with this token does not exist')
+        next(new JsonWebTokenError('User with this token does not exist'))
+
       if (rolesMap[user.role] <  rolesMap[role]) 
-        throw new PermissionError('Permission denied for this action')
-        
+        next(new PermissionError('Permission denied for this action'))
+
+      req.query.user = user
+      next()
+      
     } catch (error) {
       next(error)
     }

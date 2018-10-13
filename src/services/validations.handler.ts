@@ -12,7 +12,7 @@ export default (sample: Schema): RequestHandler => {
         })
         .validate(req.body)
         
-      if (error) throw error
+      if (error) next(error)
       
       req.body = value
       return next()
