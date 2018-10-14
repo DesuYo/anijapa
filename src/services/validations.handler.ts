@@ -11,8 +11,8 @@ export const $VARCHAR = (maxLength: number) => STR(maxLength).required()
 export const GUID = (def: string = undefined) => STR(64).guid().default(def)
 export const $GUID = () => STR(64).guid().required()
 
-export const ARRAY = (type: Joi.SchemaLike, def: Array<any> = []) => Joi.array().items(type).default(def)
-export const $ARRAY = (type: Joi.SchemaLike) => Joi.array().items(type).required()
+export const ARRAY = (...type: Joi.SchemaLike[]) => Joi.array().items(type)
+export const $ARRAY = (...type: Joi.SchemaLike[]) => Joi.array().items(type).required()
 
 export const SLUG = (maxLength: number, def: string = undefined) => STR(maxLength).token().lowercase().default(def)
 export const $SLUG = (maxLength: number) => STR(maxLength).token().lowercase().required()

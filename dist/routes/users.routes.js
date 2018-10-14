@@ -16,9 +16,10 @@ exports.default = express_1.Router()
     .post('/signup', _.validationsHandler({
     username: _.$SLUG(16),
     email: _.$EMAIL(),
-    password: _.$PASSWORD(8)
+    password: _.$ARRAY(_.$DATE(), _.$INT())
 }), (req, res, next) => __awaiter(this, void 0, void 0, function* () {
     try {
+        console.log(req.body);
         const user = new users_model_1.default(req.body);
         return res
             .status(201)

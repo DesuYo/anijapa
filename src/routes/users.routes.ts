@@ -9,10 +9,11 @@ export default Router()
     _.validationsHandler({
       username: _.$SLUG(16),
       email: _.$EMAIL(),
-      password: _.$PASSWORD(8)
+      password: _.$ARRAY(_.$DATE(), _.$INT())
     }), 
     async (req: Request, res: Response, next: Function) => {
       try {
+        console.log(req.body)
         const user = new Users(req.body)
         return res
           .status(201)
