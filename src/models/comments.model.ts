@@ -1,9 +1,10 @@
 import { Schema, model } from 'mongoose'
 
 const commentSchema = new Schema({
-  text: String,
-  userId: Schema.Types.ObjectId,
-  animeId: Schema.Types.ObjectId
+  text: { type: String, required: true },
+  userId: { type: Schema.Types.ObjectId, required: true },
+  animeId: { type: Schema.Types.ObjectId, required: true },
+  likes: [Schema.Types.ObjectId]
 }, {
   timestamps: true
 })
