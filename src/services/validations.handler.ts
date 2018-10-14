@@ -1,21 +1,21 @@
 import { Request, Response, RequestHandler } from 'express'
 import * as Joi from 'joi'
 
-const STR = (length: number) => Joi.string().trim().max(length)
+const STR = (maxLength: number) => Joi.string().trim().max(maxLength)
 const NUM = (max: number) => Joi.number().max(max)
 const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]+$/
 
-export const VARCHAR = (length: number, def: string = undefined) => STR(length).default(def)
-export const $VARCHAR = (length: number) => STR(length).required()
+export const VARCHAR = (maxLength: number, def: string = undefined) => STR(maxLength).default(def)
+export const $VARCHAR = (maxLength: number) => STR(maxLength).required()
 
-export const SLUG = (length: number, def: string = undefined) => STR(length).token().lowercase().default(def)
-export const $SLUG = (length: number) => STR(length).token().lowercase().required()
+export const SLUG = (maxLength: number, def: string = undefined) => STR(maxLength).token().lowercase().default(def)
+export const $SLUG = (maxLength: number) => STR(maxLength).token().lowercase().required()
 
-export const URI = (length: number, def: string = undefined) => STR(length).uri({ allowRelative: true }).default(def)
-export const $URI = (length: number) => STR(length).uri({ allowRelative: true }).required()
+export const URI = (maxLength: number, def: string = undefined) => STR(maxLength).uri({ allowRelative: true }).default(def)
+export const $URI = (maxLength: number) => STR(maxLength).uri({ allowRelative: true }).required()
 
-export const NAME = (length: number, def: string = undefined) => STR(length).regex(/^[a-zA-Z]$/).default(def)
-export const $NAME = (length: number) => STR(length).regex(/^[a-zA-Z]$/).required()
+export const NAME = (maxLength: number, def: string = undefined) => STR(maxLength).regex(/^[a-zA-Z]$/).default(def)
+export const $NAME = (maxLength: number) => STR(maxLength).regex(/^[a-zA-Z]$/).required()
 
 export const EMAIL = (def: string = undefined) => STR(64).email().default(def)
 export const $EMAIL = () => STR(64).email().required()
@@ -32,11 +32,11 @@ export const $INT = (max: number = 2**32) => NUM(max).integer().required()
 export const UINT = (max: number = 2**32, def: number = undefined) => NUM(max).integer().positive().default(def)
 export const $UINT = (max: number = 2**32) => NUM(max).integer().positive().required()
 
-export const FLOAT = (max: number = 2**32, precision: number, def: number = undefined) => NUM(max).precision(precision).default(def)
-export const $FLOAT = (max: number = 2**32, precision: number) => NUM(max).precision(precision).required()
+export const FLOAT = (max: number = 2**32, precision: number = 3, def: number = undefined) => NUM(max).precision(precision).default(def)
+export const $FLOAT = (max: number = 2**32, precision: number = 3) => NUM(max).precision(precision).required()
 
-export const UFLOAT = (max: number = 2**32, precision: number, def: number = undefined) => NUM(max).precision(precision).positive().default(def)
-export const $UFLOAT = (max: number = 2**32, precision: number) => NUM(max).precision(precision).positive().required()
+export const UFLOAT = (max: number = 2**32, precision: number = 3, def: number = undefined) => NUM(max).precision(precision).positive().default(def)
+export const $UFLOAT = (max: number = 2**32, precision: number = 3) => NUM(max).precision(precision).positive().required()
 
 export const BOOL = (def: boolean = undefined) => Joi.boolean().default(def)
 
