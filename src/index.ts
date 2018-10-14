@@ -23,5 +23,5 @@ export default express()
       .end()
   })
   .use(errorsHandler)
-  .listen(process.env.PORT, () => console.log(`I'm gonna poop on the plate, bratok...`))
+  .listen(process.env.PORT || 777, () => console.log(`I'm gonna poop on the plate, bratok...`))
 

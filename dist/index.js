@@ -23,5 +23,5 @@ exports.default = express()
         .end();
 })
     .use(errors_handler_1.default)
-    .listen(process.env.PORT, () => console.log(`I'm gonna poop on the plate, bratok...`));
+    .listen(process.env.PORT || 777, () => console.log(`I'm gonna poop on the plate, bratok...`));
 //# sourceMappingURL=index.js.map
