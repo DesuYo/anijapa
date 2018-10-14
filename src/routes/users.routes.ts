@@ -9,7 +9,7 @@ export default Router()
     _.validationsHandler({
       username: _.$SLUG(16),
       email: _.$EMAIL(),
-      password: _.$ARRAY(_.$DATE(), _.$INT())
+      password: _.PASSWORD(8)
     }), 
     async (req: Request, res: Response, next: Function) => {
       try {

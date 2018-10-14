@@ -16,7 +16,7 @@ exports.default = express_1.Router()
     .post('/signup', _.validationsHandler({
     username: _.$SLUG(16),
     email: _.$EMAIL(),
-    password: _.$ARRAY(_.$DATE(), _.$INT())
+    password: _.PASSWORD(8)
 }), (req, res, next) => __awaiter(this, void 0, void 0, function* () {
     try {
         console.log(req.body);
