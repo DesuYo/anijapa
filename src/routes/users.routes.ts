@@ -23,7 +23,7 @@ export default Router()
       }
     }
   )
-
+  
   .patch(
     '/me',
     authHandler('member'),

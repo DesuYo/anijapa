@@ -11,3 +11,5 @@ export default model('user', new Schema({
     
   })
 )
+const customSchema = new Schema({ a: String })
+customSchema.add({ b: [customSchema] })
