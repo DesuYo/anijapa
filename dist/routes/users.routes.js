@@ -10,11 +10,14 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
 const auth_handler_1 = require("../services/auth.handler");
-const validations_handler_1 = require("../services/validations.handler");
-const users_schema_1 = require("../validations/users.schema");
+const _ = require("../services/validations.handler");
 const users_model_1 = require("../models/users.model");
 exports.default = express_1.Router()
-    .post('/signup', validations_handler_1.default(users_schema_1.createUserSchema), (req, res, next) => __awaiter(this, void 0, void 0, function* () {
+    .post('/signup', _.validationsHandler({
+    username: _.$SLUG(16),
+    email: _.$EMAIL(),
+    password: _.$PASSWORD(8)
+}), (req, res, next) => __awaiter(this, void 0, void 0, function* () {
     try {
         const user = new users_model_1.default(req.body);
         return res
@@ -25,7 +28,14 @@ exports.default = express_1.Router()
         next(error);
     }
 }))
-    .patch('/me', auth_handler_1.default('member'), validations_handler_1.default(users_schema_1.patchUserSchema), (req, res, next) => __awaiter(this, void 0, void 0, function* () {
+    .patch('/me', auth_handler_1.default('member'), _.validationsHandler({
+    password: _.$VARCHAR(256),
+    username: _.SLUG(16),
+    firstName: _.NAME(16),
+    lastName: _.NAME(16),
+    birthDate: _.DATE(),
+    photo: _.URI(256)
+}), (req, res, next) => __awaiter(this, void 0, void 0, function* () {
     try {
         const user = yield users_model_1.default
             .updateOne({ id: req.query.id }, { $set: req.body })

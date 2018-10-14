@@ -1,13 +1,16 @@
 import { Router, Request, Response } from 'express'
 import authHandler from '../services/auth.handler'
-import validationsHandler from '../services/validations.handler'
-import { createUserSchema, patchUserSchema } from '../validations/users.schema'
+import * as _ from '../services/validations.handler'
 import Users from '../models/users.model'
 
 export default Router()
   .post(
     '/signup', 
-    validationsHandler(createUserSchema), 
+    _.validationsHandler({
+      username: _.$SLUG(16),
+      email: _.$EMAIL(),
+      password: _.$PASSWORD(8)
+    }), 
     async (req: Request, res: Response, next: Function) => {
       try {
         const user = new Users(req.body)
@@ -24,7 +27,14 @@ export default Router()
   .patch(
     '/me',
     authHandler('member'),
-    validationsHandler(patchUserSchema),
+    _.validationsHandler({
+      password: _.$VARCHAR(256),
+      username: _.SLUG(16),
+      firstName: _.NAME(16),
+      lastName: _.NAME(16),
+      birthDate: _.DATE(),
+      photo: _.URI(256)
+    }),
     async (req: Request, res: Response, next: Function) => {
       try {
         const user = await Users
