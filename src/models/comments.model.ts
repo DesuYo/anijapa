@@ -8,8 +8,9 @@ const commentSchema = new Schema({
   timestamps: true
 })
 
-commentSchema.add({
-  replyTo: [commentSchema]
-})
+commentSchema
+  .add({
+    replyTo: [commentSchema]
+  })
 
 export default model('comment', commentSchema)
