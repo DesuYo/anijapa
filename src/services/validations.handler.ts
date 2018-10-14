@@ -8,6 +8,9 @@ const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]+$/
 export const VARCHAR = (maxLength: number, def: string = undefined) => STR(maxLength).default(def)
 export const $VARCHAR = (maxLength: number) => STR(maxLength).required()
 
+export const GUID = (def: string = undefined) => STR(64).guid().default(def)
+export const $GUID = () => STR(64).guid().required()
+
 export const SLUG = (maxLength: number, def: string = undefined) => STR(maxLength).token().lowercase().default(def)
 export const $SLUG = (maxLength: number) => STR(maxLength).token().lowercase().required()
 
