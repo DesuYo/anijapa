@@ -39,7 +39,7 @@ export default Router()
     async (req: Request, res: Response, next: Function) => {
       try {
         const user = await Users
-          .updateOne({ id: req.query.id }, { $set: req.body })
+          .updateOne({ _id: req.query.id }, { $set: req.body })
           .exec()
        
         return res
