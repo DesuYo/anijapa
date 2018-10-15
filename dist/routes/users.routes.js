@@ -39,7 +39,7 @@ exports.default = express_1.Router()
 }), (req, res, next) => __awaiter(this, void 0, void 0, function* () {
     try {
         const user = yield users_model_1.default
-            .updateOne({ id: req.query.id }, { $set: req.body })
+            .updateOne({ _id: req.query.id }, { $set: req.body })
             .exec();
         return res
             .status(200)
