@@ -23,10 +23,11 @@ export default (role: string): RequestHandler => {
       if (type !== 'Bearer')
         next(new JsonWebTokenError('Bearer token is required!'))
 
-      const { id }: any = verify(token, process.env.JWT_SECRET || '難しい鍵')
+      const { _id }: any = verify(token, process.env.JWT_SECRET || '難しい鍵')
       const doc = await Users
-        .findById(id)
+        .findById(_id)
         .select('-password')
+        .exec()
       const user = doc.toObject()
 
       if (!user) 
@@ -35,7 +36,7 @@ export default (role: string): RequestHandler => {
       if (rolesMap[user.role] <  rolesMap[role]) 
         next(new PermissionError('Permission denied for this action'))
 
-      req.query.user = user
+      req.user = user
       next()
       
     } catch (error) {

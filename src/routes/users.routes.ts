@@ -1,7 +1,8 @@
 import { Router, Request, Response } from 'express'
 import authHandler from '../services/auth.handler'
 import * as _ from '../services/validations.handler'
-import Users from '../models/users.model'
+import { sign } from 'jsonwebtoken'
+import { hashSync } from 'bcryptjs'
 
 export default Router()
   .post(
@@ -9,15 +10,23 @@ export default Router()
     _.validationsHandler({
       username: _.$SLUG(16),
       email: _.$EMAIL(),
-      password: _.PASSWORD(8)
+      password: _.$PASSWORD(8)
     }), 
     async (req: Request, res: Response, next: Function) => {
       try {
-        console.log(req.body)
-        const user = new Users(req.body)
+        const { db, body } = req
+        const { _id } = (await db['users']
+          .create({ 
+            ...body, 
+            password: hashSync(body.password) 
+          }))
+          .toObject()
         return res
           .status(201)
-          .json(await user.save())
+          .json({ token: sign(
+            { _id }, 
+            process.env.JWT_SECRET || '難しい鍵'
+          )})
         
       } catch (error) {
         next(error)
@@ -38,13 +47,38 @@ export default Router()
     }),
     async (req: Request, res: Response, next: Function) => {
       try {
-        const user = await Users
-          .updateOne({ _id: req.query.id }, { $set: req.body })
+        const { db, user, body } = req
+        const result = await db['users']
+          .updateOne(
+            { _id: user._id }, 
+            { $set: body }
+          )
           .exec()
-       
         return res
           .status(200)
-          .json(user)
+          .json({ message: `Modified ${result.ok} document[s]` })
+        
+      } catch (error) {
+        next(error)
+      }
+    }
+  )
+
+  .get(
+    '/me',
+    authHandler('member'),
+    async (req: Request, res: Response, next: Function) => {
+      try {
+        const { db, user } = req
+        const result = await db['users']
+          .findById(user._id, {
+            password: 0,
+            __v: 0
+          })
+          .exec()
+        return res
+          .status(200)
+          .json(result)
         
       } catch (error) {
         next(error)
