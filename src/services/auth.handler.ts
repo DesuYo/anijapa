@@ -25,8 +25,10 @@ export default (role: string): RequestHandler => {
 
       const { _id }: any = verify(token, process.env.JWT_SECRET || '難しい鍵')
       const doc = await Users
-        .findById(_id)
-        .select('-password')
+        .findById(_id, {
+          password: 0,
+          __v: 0
+        })
         .exec()
       const user = doc.toObject()
 

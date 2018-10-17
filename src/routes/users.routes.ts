@@ -69,16 +69,10 @@ export default Router()
     authHandler('member'),
     async (req: Request, res: Response, next: Function) => {
       try {
-        const { db, user } = req
-        const result = await db['users']
-          .findById(user._id, {
-            password: 0,
-            __v: 0
-          })
-          .exec()
+        const { user } = req
         return res
           .status(200)
-          .json(result)
+          .json(user)
         
       } catch (error) {
         next(error)

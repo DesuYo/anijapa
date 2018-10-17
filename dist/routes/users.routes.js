@@ -55,16 +55,10 @@ exports.default = express_1.Router()
 }))
     .get('/me', auth_handler_1.default('member'), (req, res, next) => __awaiter(this, void 0, void 0, function* () {
     try {
-        const { db, user } = req;
-        const result = yield db['users']
-            .findById(user._id, {
-            password: 0,
-            __v: 0
-        })
-            .exec();
+        const { user } = req;
         return res
             .status(200)
-            .json(result);
+            .json(user);
     }
     catch (error) {
         next(error);
