@@ -174,5 +174,4 @@ export default Router()
         next(error)
       }
     }
-
   )
