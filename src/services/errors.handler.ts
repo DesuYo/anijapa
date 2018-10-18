@@ -23,7 +23,7 @@ export default (error: any, req: Request, res: Response, next: Function) => {
       
       case error.name === 'MongoError' && error.code === 11000: return res
         .status(400)
-        .json({ error })
+        .json({ error: error.errmsg })
   
       default: throw error
     }

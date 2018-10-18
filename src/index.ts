@@ -4,6 +4,7 @@ import * as bodyParser from 'body-parser'
 import * as cors from 'cors'
 import * as morgan from 'morgan'
 import { join } from 'path'
+import connectionHandler from './services/db.connection'
 import routes from './routes/index.routes'
 import errorsHandler from './services/errors.handler'
 
@@ -16,6 +17,7 @@ export default express()
   .use(cors())
   .use(bodyParser.json())
   .use(bodyParser.urlencoded({ extended: true }))
+  .use(connectionHandler)
   .use('/api', routes)
   .use((req: express.Request, res: express.Response) => {
     res

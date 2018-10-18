@@ -1,17 +1,14 @@
 import { Schema, model } from 'mongoose'
+const GUID = Schema.Types.ObjectId
 
 const commentSchema = new Schema({
-  text: { type: String, required: true },
-  userId: { type: Schema.Types.ObjectId, required: true },
-  animeId: { type: Schema.Types.ObjectId, required: true },
-  likes: [Schema.Types.ObjectId]
+  text: String,
+  userId: { type: GUID, ref: 'User' },
+  animeId: { type: GUID, ref: 'Anime' },
+  likes: [{ type: GUID, ref: 'User' }],
+  replies: [{ type: GUID, ref: 'Comment' }]
 }, {
   timestamps: true
 })
-
-commentSchema
-  .add({
-    replyTo: [commentSchema]
-  })
 
 export default model('comment', commentSchema)

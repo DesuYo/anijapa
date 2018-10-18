@@ -11,7 +11,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
 const auth_handler_1 = require("../services/auth.handler");
 const _ = require("../services/validations.handler");
-const users_model_1 = require("../models/users.model");
+const jsonwebtoken_1 = require("jsonwebtoken");
+const bcryptjs_1 = require("bcryptjs");
 exports.default = express_1.Router()
     .post('/signup', _.validationsHandler({
     username: _.$SLUG(16),
@@ -19,10 +20,13 @@ exports.default = express_1.Router()
     password: _.$PASSWORD(8)
 }), (req, res, next) => __awaiter(this, void 0, void 0, function* () {
     try {
-        const user = new users_model_1.default(req.body);
+        const { db, body } = req;
+        const { _id } = (yield db['users']
+            .create(Object.assign({}, body, { password: bcryptjs_1.hashSync(body.password) })))
+            .toObject();
         return res
             .status(201)
-            .json(yield user.save());
+            .json({ token: jsonwebtoken_1.sign({ _id }, process.env.JWT_SECRET || '難しい鍵') });
     }
     catch (error) {
         next(error);
@@ -37,9 +41,21 @@ exports.default = express_1.Router()
     photo: _.URI(256)
 }), (req, res, next) => __awaiter(this, void 0, void 0, function* () {
     try {
-        const user = yield users_model_1.default
-            .updateOne({ id: req.query.id }, { $set: req.body })
+        const { db, user, body } = req;
+        const result = yield db['users']
+            .updateOne({ _id: user._id }, { $set: body })
             .exec();
+        return res
+            .status(200)
+            .json({ message: `Modified ${result.ok} document[s]` });
+    }
+    catch (error) {
+        next(error);
+    }
+}))
+    .get('/me', auth_handler_1.default('member'), (req, res, next) => __awaiter(this, void 0, void 0, function* () {
+    try {
+        const { user } = req;
         return res
             .status(200)
             .json(user);

@@ -1,24 +1,55 @@
 import { Router, Request, Response } from 'express'
 import authHandler, { PermissionError } from '../services/auth.handler'
 import * as _ from '../services/validations.handler'
-import Comments from '../models/comments.model'
 
 export default Router()
+  .patch(
+    '/:id/likes',
+    authHandler('member'),
+    async (req: Request, res: Response, next: Function) => {
+      try {
+        const { db, user, params } = req
+        const comment = await db['comments']
+          .findById(params.id)
+          .exec()
+        const operator = comment.toObject().likes.includes(user._id) ? '$pull' : '$push'
+        const result = await db['comments']
+          .findByIdAndUpdate(
+            params.id,
+            {
+              [operator]: { likes: user._id }
+            },
+            { new: true }
+          )
+          .exec()
+        return res
+          .status(200)
+          .json(result)
+
+      } catch (error) {
+        next(error)
+      }
+    }
+  )
+
   .post(
     '/', 
     authHandler('member'),
     _.validationsHandler({
-      text: _.$VARCHAR(400),
+      text: _.$VARCHAR(300),
       animeId: _.$GUID(),
       replies: _.ARRAY(_.GUID()),
       likes: _.ARRAY(_.GUID())
     }),
     async (req: Request, res: Response, next: Function) => {
       try {
-        const comment = new Comments(req.body)
+        const { body, user, db } = req
         return res
           .status(201)
-          .json(await comment.save())
+          .json(await db['comments'].create({
+            ...body,
+            userId: user._id
+          }))
       }
       catch (error) {
         next(error)
@@ -27,20 +58,24 @@ export default Router()
   )
 
   .patch(
-    '/',
+    '/:id',
     authHandler('member'),
     _.validationsHandler({
-      text: _.$VARCHAR(400)
+      text: _.$VARCHAR(300)
     }),
     async (req: Request, res: Response, next: Function) => {
       try {
-        const comment = await Comments
-          .updateOne({ _id: req.query.user._id }, { $set: req.body})
+        const { db, user, params, body } = req
+        const result = await db['comment']
+          .updateOne(
+            { _id: params.id, userId: user._id },
+            { $set: { text: body.text } },
+            { new: true }
+          )
           .exec()
-
         return res
-          .status(200)
-          .json(comment)
+          .status(result.ok < 1 ? 400 : 200)
+          .json({ result })
       }
       catch (error) {
         next(error)
@@ -49,18 +84,16 @@ export default Router()
   )
 
   .delete(
-    '/',
+    '/:id',
     authHandler('member'),
-    _.validationsHandler({
-      id: _.$GUID()
-    }),
     async (req: Request, res: Response, next: Function) => {
       try {
-        const comment = await Comments
-          .findOneAndRemove({
-            _id: req.body.id,
-            userId: req.query.user._id
-          })
+        const { db, user, params, body } = req
+        const comment = await db['comment']
+          .deleteOne({
+            _id: params.id,
+            userId: user._id
+          }).error()
 
       return res
         .status(200)
@@ -72,7 +105,7 @@ export default Router()
     }
   )
 
-  .patch(
+  /*.patch(
     '/:id/likes',
     authHandler('member'),
     async (req: Request, res: Response, next: Function) => {
@@ -174,4 +207,5 @@ export default Router()
         next(error)
       }
     }
-  )
+
+  )*/

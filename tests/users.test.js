@@ -1,20 +1,12 @@
-const chai = require('chai')
-const routes = require('../dist').default
+//const chai = require('chai')
+const app = require('../dist').default
 
-describe('POST /api/users/signup', () => {
+chai.use(require('chai-http'))
+
+/*describe('POST /api/users/signup', () => {
   it('test invalid request body', done => {
-    chai
+    app()
   })
 
-  /*it('test valid request body', done => {
-    request(app)
-      .post('/api/users/signup')
-      .send({
-        username: 'senpai_desu',
-        email: 'olehdesu@gmail.com',
-        password: 'qwerTY12345'
-      })
-      .expect(201)
-      .end(done)
-  })*/
-})
+
+})*/

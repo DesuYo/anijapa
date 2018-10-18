@@ -3,7 +3,11 @@ import { Schema, model } from 'mongoose'
 export default model('user', new Schema({
   username: { type: String, unique: true },
   email: { type: String, unique: true },
-  password: String
+  password: String,
+  firstName: String,
+  lastName: String,
+  birthDate: Date,
+  photo: String
 }, {
   timestamps: true
 })
@@ -11,5 +15,3 @@ export default model('user', new Schema({
     
   })
 )
-const customSchema = new Schema({ a: String })
-customSchema.add({ b: [customSchema] })
