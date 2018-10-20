@@ -7,7 +7,7 @@ import { hashSync } from 'bcryptjs'
 export default Router()
   .post(
     '/signup', 
-    _.validationsHandler({
+    _.validationHandler({
       username: _.$SLUG(16),
       email: _.$EMAIL(),
       password: _.$PASSWORD(8)
@@ -37,7 +37,7 @@ export default Router()
   .patch(
     '/me',
     authHandler('member'),
-    _.validationsHandler({
+    _.validationHandler({
       password: _.$VARCHAR(256),
       username: _.SLUG(16),
       firstName: _.NAME(16),

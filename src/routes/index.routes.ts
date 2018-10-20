@@ -4,4 +4,4 @@ import commentsRoutes from './comments.routes'
 
 export default Router()
   .use('/users', usersRoutes)
-  .use('/comments', commentsRoutes)
+  .use('/anime/:animeId/comments', commentsRoutes)

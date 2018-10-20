@@ -14,7 +14,7 @@ const _ = require("../services/validations.handler");
 const jsonwebtoken_1 = require("jsonwebtoken");
 const bcryptjs_1 = require("bcryptjs");
 exports.default = express_1.Router()
-    .post('/signup', _.validationsHandler({
+    .post('/signup', _.validationHandler({
     username: _.$SLUG(16),
     email: _.$EMAIL(),
     password: _.$PASSWORD(8)
@@ -32,7 +32,7 @@ exports.default = express_1.Router()
         next(error);
     }
 }))
-    .patch('/me', auth_handler_1.default('member'), _.validationsHandler({
+    .patch('/me', auth_handler_1.default('member'), _.validationHandler({
     password: _.$VARCHAR(256),
     username: _.SLUG(16),
     firstName: _.NAME(16),

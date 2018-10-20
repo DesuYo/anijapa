@@ -35,7 +35,7 @@ export default Router()
   .post(
     '/', 
     authHandler('member'),
-    _.validationsHandler({
+    _.validationHandler({
       text: _.$VARCHAR(300),
       animeId: _.$GUID(),
       replies: _.ARRAY(_.GUID()),
@@ -60,7 +60,7 @@ export default Router()
   .patch(
     '/:id',
     authHandler('member'),
-    _.validationsHandler({
+    _.validationHandler({
       text: _.$VARCHAR(300)
     }),
     async (req: Request, res: Response, next: Function) => {
