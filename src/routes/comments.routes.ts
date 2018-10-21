@@ -35,7 +35,7 @@ export default Router()
   .post(
     '/', 
     authHandler('member'),
-    _.validationsHandler({
+    _.validationHandler({
       text: _.$VARCHAR(300),
       animeId: _.$GUID(),
       replies: _.ARRAY(_.GUID()),
@@ -58,7 +58,7 @@ export default Router()
   .patch(
     '/:id',
     authHandler('member'),
-    _.validationsHandler({
+    _.validationHandler({
       text: _.$VARCHAR(300)
     }),
     async (req: Request, res: Response, next: Function) => {
@@ -106,7 +106,7 @@ export default Router()
   .delete(
     '/',
     authHandler('admin'),
-    _.validationsHandler({
+    _.validationHandler({
       id: _.$GUID()
     }),
     async (req: Request, res: Response, next: Function) => {
@@ -132,7 +132,8 @@ export default Router()
       try {
         const { text = '', ...rest } = req.query
 
-        const comments = await Comments
+        const { db } = req
+        const comments = await db['comment']
           .find({
             text: new RegExp('.*' + text + '.*', 'i'),
             rest

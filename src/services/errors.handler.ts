@@ -1,12 +1,12 @@
 import { JsonWebTokenError, TokenExpiredError } from 'jsonwebtoken'
 import { ValidationError, ValidationErrorItem } from 'joi'
 import { Request, Response } from 'express'
-import { PermissionError } from './auth.handler'
+import { PermissionError, OAuthError } from './auth.handler'
 
 export default (error: any, req: Request, res: Response, next: Function) => {
   try {
     switch (true) {
-      case error instanceof JsonWebTokenError || error instanceof TokenExpiredError: return res
+      case error instanceof JsonWebTokenError || error instanceof TokenExpiredError || error instanceof OAuthError: return res
         .status(401)
         .json({ error })
 
@@ -30,6 +30,6 @@ export default (error: any, req: Request, res: Response, next: Function) => {
   } catch (error) {
     return res
       .status(500)
-      .json({ error })
+      .json({ error: error.message || error })
   }
 }

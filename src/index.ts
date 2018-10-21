@@ -5,10 +5,12 @@ import * as cors from 'cors'
 import * as morgan from 'morgan'
 import { join } from 'path'
 import connectionHandler from './services/db.connection'
+import { googleAuthorize, googleCallback } from './services/auth.handler'
 import routes from './routes/index.routes'
 import errorsHandler from './services/errors.handler'
 
 dotenv.config()
+const { PORT = 777, FACEBOOK_ID, FACEBOOK_SECRET } = process.env
 
 export default express()
   .set('view engine', 'pug')
@@ -18,6 +20,8 @@ export default express()
   .use(bodyParser.json())
   .use(bodyParser.urlencoded({ extended: true }))
   .use(connectionHandler)
+  .get('/google', googleAuthorize('https://www.googleapis.com/auth/userinfo.profile'))
+  .all('/google/callback', googleCallback())
   .use('/api', routes)
   .use((req: express.Request, res: express.Response) => {
     res
@@ -25,5 +29,5 @@ export default express()
       .end()
   })
   .use(errorsHandler)
-  .listen(process.env.PORT || 777, () => console.log(`I'm gonna poop on the plate, bratok...`))
+  .listen(PORT, () => console.log(`I'm gonna poop on the plate, bratok...`))
 

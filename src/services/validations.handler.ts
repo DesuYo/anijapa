@@ -49,10 +49,11 @@ export const BOOL = (def: boolean = undefined) => Joi.boolean().default(def)
 export const DATE = (def: Date = undefined) => Joi.date().iso().default(def)
 export const $DATE = () => Joi.date().iso().required()
 
-export const validationsHandler = (sample: Joi.SchemaLike): RequestHandler => {
-  return async (req: Request, res: Response, next: Function) => {
+export const validationHandler = (sample: Joi.SchemaLike): RequestHandler => {
+  return async (req: Request, _: Response, next: Function) => {
     try {
-      const { error, value } = Joi.compile(sample)
+      const { error, value } = Joi
+        .compile(sample)
         .options({
           abortEarly: false,
           allowUnknown: true,
