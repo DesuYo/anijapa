@@ -12,8 +12,8 @@ const mongoose = require("mongoose");
 const index_model_1 = require("../models/index.model");
 exports.default = (req, _, next) => __awaiter(this, void 0, void 0, function* () {
     try {
-        const { DB_USER, DB_PASSWORD, DB_HOST, DB_PORT, DB_NAME } = process.env;
-        yield mongoose.connect(`mongodb://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}`, { useNewUrlParser: true });
+        const { DB_URI } = process.env;
+        yield mongoose.connect(DB_URI, { useNewUrlParser: true });
         req.db = index_model_1.default;
         next();
     }

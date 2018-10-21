@@ -4,8 +4,8 @@ import models from '../models/index.model'
 
 export default async (req: Request, _: Response, next: Function) => {
   try {
-    const { DB_USER, DB_PASSWORD, DB_HOST, DB_PORT, DB_NAME } = process.env
-    await mongoose.connect(`mongodb://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}`, { useNewUrlParser: true })
+    const { DB_URI } = process.env
+    await mongoose.connect(DB_URI, { useNewUrlParser: true })
     req.db = models
     next()
   } catch (error) {
