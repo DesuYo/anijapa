@@ -22,15 +22,6 @@ export class PermissionError {
   }
 }
 
-const urls: any = {
-  github: { 
-    authorize: 'https://github.com/login/oauth/authorize',
-    token: 'https://github.com/login/oauth/access_token',
-    profile: 'https://api.github.com/user'
-  }
-}
-
-
 export const googleAuthorize = (scope: string) => {
   return async (req: Request, res: Response, next: Function) => {
     try {
