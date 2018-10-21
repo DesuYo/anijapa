@@ -30,7 +30,7 @@ export const googleAuthorize = (scope: string) => {
       res.redirect(
         'https://accounts.google.com/o/oauth2/v2/auth' +
         `?client_id=${GOOGLE_ID}` +
-        `&redirect_uri=${protocol}://${req.get('host')}${path}/callback` +
+        `&redirect_uri=https://${req.get('host')}${path}/callback` +
         `&scope=${scope}` +
         `&response_type=code`
       )
@@ -56,7 +56,7 @@ export const googleCallback = () => {
           client_id: GOOGLE_ID,
           client_secret: GOOGLE_SECRET,
           code: query['code'],
-          redirect_uri: `${protocol}://${req.get('host')}${path}`,
+          redirect_uri: `https://${req.get('host')}${path}`,
           grant_type: 'authorization_code'
         }))
         .body
