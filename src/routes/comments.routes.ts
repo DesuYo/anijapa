@@ -44,12 +44,10 @@ export default Router()
     async (req: Request, res: Response, next: Function) => {
       try {
         const { body, user, db } = req
+        const comment = new db['comments']({ ...body, userId: user._id })
         return res
           .status(201)
-          .json(await db['comments'].create({
-            ...body,
-            userId: user._id
-          }))
+          .json(await comment.save())
       }
       catch (error) {
         next(error)
@@ -73,7 +71,7 @@ export default Router()
             { new: true }
           )
           .exec()
-        return res
+        return res 
           .status(result.ok < 1 ? 400 : 200)
           .json({ result })
       }
@@ -105,66 +103,6 @@ export default Router()
     }
   )
 
-  /*.patch(
-    '/:id/likes',
-    authHandler('member'),
-    async (req: Request, res: Response, next: Function) => {
-      try {
-        const comment = (await Comments.findOne({
-          _id: req.params.id  
-        })).toObject()
-
-        const { _id } = req.query.user
-        if (comment.likes.includes(_id)) {
-          throw new Error('Like has already been posted')
-        }
-        const likedComment = Comments.updateOne({
-          _id: req.params.id}, { 
-          $push: {
-            likes: _id 
-          }
-        })
-
-        return res
-          .status(200)
-          .json(likedComment)
-      }
-      catch (error) {
-        next(error)
-      }
-    }
-  )
-
-  .delete(
-    '/:id/likes',
-    authHandler('member'),
-    async (req: Request, res: Response, next: Function) => {
-      try {
-        const comment = (await Comments.findOne({
-          _id: req.params.id
-        })).toObject()
-
-        const { _id } = req.query.user
-        if (!comment.likes.includes(_id)) {
-          throw new Error('Like has not been posted yet')
-        }
-        const likedComment = Comments.updateOne({
-          _id: req.params.id}, { 
-          $pull: {
-            likes: _id 
-          }
-        })
-
-        return res
-          .status(200)
-          .json(likedComment)
-      }
-      catch (error) {
-        next(error)
-      }
-    }
-  )
-
   .delete(
     '/',
     authHandler('admin'),
@@ -173,7 +111,8 @@ export default Router()
     }),
     async (req: Request, res: Response, next: Function) => {
       try {
-        const comment = await Comments
+        const { db } = req
+        const comment = await db['comment']
           .findByIdAndRemove(req.body.id)
 
       return res
@@ -207,5 +146,4 @@ export default Router()
         next(error)
       }
     }
-
-  )*/
+  )
