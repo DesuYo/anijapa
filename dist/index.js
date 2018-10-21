@@ -11,7 +11,7 @@ const auth_handler_1 = require("./services/auth.handler");
 const index_routes_1 = require("./routes/index.routes");
 const errors_handler_1 = require("./services/errors.handler");
 dotenv.config();
-const { PORT = 777, FACEBOOK_ID, FACEBOOK_SECRET } = process.env;
+const { PORT = 777 } = process.env;
 exports.default = express()
     .set('view engine', 'pug')
     .set('views', path_1.join(__dirname, 'public', 'views'))

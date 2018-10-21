@@ -60,18 +60,18 @@ export const googleCallback = () => {
           grant_type: 'authorization_code'
         }))
         .body
-      console.log(access_token)
+    
       const data = (await httpClient
         .get('https://www.googleapis.com/oauth2/v1/userinfo')
         .set('accept', 'application/json')
         .query({ access_token }))
         .body
-      console.log(data)
+      
       let user = await db['users']
         .findOne({ googleID: data.id })
         .exec()
         
-      console.log(user)
+      
       if (user) return res
         .status(200)
         .json({ token: sign({ _id: user.toObject()._id }, JWT_SECRET) })
