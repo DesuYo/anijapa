@@ -5,12 +5,12 @@ import * as cors from 'cors'
 import * as morgan from 'morgan'
 import { join } from 'path'
 import connectionHandler from './services/db.connection'
-import { initOAuthClient, authorize, callback } from './services/auth.handler'
+import { googleAuthorize, googleCallback } from './services/auth.handler'
 import routes from './routes/index.routes'
 import errorsHandler from './services/errors.handler'
 
 dotenv.config()
-const { PORT = 777, GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET } = process.env
+const { PORT = 777, FACEBOOK_ID, FACEBOOK_SECRET } = process.env
 
 export default express()
   .set('view engine', 'pug')
@@ -20,14 +20,8 @@ export default express()
   .use(bodyParser.json())
   .use(bodyParser.urlencoded({ extended: true }))
   .use(connectionHandler)
-  .use(initOAuthClient({
-    github: {
-      client_id: GITHUB_CLIENT_ID,
-      client_secret: GITHUB_CLIENT_SECRET
-    }
-  }))
-  .use('/oauth/github', authorize('github', `http://localhost:${PORT}/oauth/github/callback`))
-  .use('/oauth/github/callback', callback('github'))
+  .get('/google', googleAuthorize('https://www.googleapis.com/auth/userinfo.profile'))
+  .all('/google/callback', googleCallback())
   .use('/api', routes)
   .use((req: express.Request, res: express.Response) => {
     res

@@ -1,5 +1,5 @@
 import { Request, Response, RequestHandler } from 'express'
-import { verify, JsonWebTokenError } from 'jsonwebtoken'
+import { verify, JsonWebTokenError, sign } from 'jsonwebtoken'
 import Users from '../models/users.model'
 import * as httpClient from 'superagent'
 
@@ -30,54 +30,74 @@ const urls: any = {
   }
 }
 
-export const initOAuthClient = (config: IOAuthConfig) => {
-  return (req: Request, _: Response, next: Function) => {
+
+export const googleAuthorize = (scope: string) => {
+  return async (req: Request, res: Response, next: Function) => {
     try {
-      req.oauth = config
-      next()
+      const { protocol, path } = req
+      const { GOOGLE_ID } = process.env
+      res.redirect(
+        'https://accounts.google.com/o/oauth2/v2/auth' +
+        `?client_id=${GOOGLE_ID}` +
+        `&redirect_uri=${protocol}://${req.get('host')}${path}/callback` +
+        `&scope=${scope}` +
+        `&response_type=code`
+      )
     } catch (error) {
       next(error)
     }
   }
 }
 
-export const authorize = (resource: string, redirect_uri: string = '') => {
+export const googleCallback = () => {
   return async (req: Request, res: Response, next: Function) => {
     try {
-      const { client_id } = req.oauth[resource]
-      return res.redirect(urls[resource].authorize + `?client_id=${client_id}&redirect_uri=${redirect_uri}`)
-    } catch (error) {
-      next(error)
-    }
-  }
-}
-
-export const callback = (resource: string, redirect_uri: string = '') => {
-  return async (req: Request, res: Response, next: Function) => {
-    try {
-      const { oauth, query, db } = req
-      const { client_id, client_secret } = oauth[resource]
+      const { protocol, path, query, db } = req
+      const { GOOGLE_ID, GOOGLE_SECRET, JWT_SECRET } = process.env
       if (!query['code']) 
         return next(new OAuthError('Missing authorization code.'))
-  
+
       const { access_token } = (await httpClient
-        .post(urls[resource].token)
+        .post('https://www.googleapis.com/oauth2/v4/token')
         .set('accept', 'application/json')
-        .set('content-type', 'application/json')
+        .set('content-type', 'application/x-www-form-urlencoded')
         .send({
-          client_id,
-          client_secret,
-          redirect_uri,
-          code: query['code']
-        })).body
-      const user = (await httpClient
-        .get(urls[resource].profile)
-        .query({ access_token })).body
+          client_id: GOOGLE_ID,
+          client_secret: GOOGLE_SECRET,
+          code: query['code'],
+          redirect_uri: `${protocol}://${req.get('host')}${path}`,
+          grant_type: 'authorization_code'
+        }))
+        .body
+      console.log(access_token)
+      const data = (await httpClient
+        .get('https://www.googleapis.com/oauth2/v1/userinfo')
+        .set('accept', 'application/json')
+        .query({ access_token }))
+        .body
+      console.log(data)
+      let user = await db['users']
+        .findOne({ googleID: data.id })
+        .exec()
+        
       console.log(user)
-      req.user = user
-      return res
+      if (user) return res
         .status(200)
-        .end()
+        .json({ token: sign({ _id: user.toObject()._id }, JWT_SECRET) })
+      
+      const { id, given_name, family_name, picture } = data
+      user = (await db['users']
+        .create({
+          googleID: id,
+          firstName: given_name,
+          lastName: family_name,
+          photo: picture
+        }))
+        .toObject()
+      
+      return res
+        .status(201)
+        .json({ token: sign({ _id: user._id }, JWT_SECRET) })
       
     } catch (error) {
       return next(error)

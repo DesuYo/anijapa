@@ -2,13 +2,19 @@ import { Model, Document } from 'mongoose'
 
 declare global {
   interface ICredentials {
-    client_id: string
-    client_secret: string
+    clientID: string
+    clientSecret: string
   }
   interface IOAuthConfig {
-    github?: ICredentials,
-    google?: ICredentials,
+    facebook?: ICredentials
+    github?: ICredentials
+    google?: ICredentials
     [name: string]: ICredentials
+  }
+  interface IOAuthResource {
+    authorizeURI: string,
+    tokenURI: string,
+    profileURI: string
   }
   namespace Express {
     interface Request {
@@ -17,7 +23,7 @@ declare global {
       }
       oauth: IOAuthConfig
       user: {
-        _id: string
+        id: string
         [name: string]: any
       }
     }

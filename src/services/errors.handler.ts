@@ -30,6 +30,6 @@ export default (error: any, req: Request, res: Response, next: Function) => {
   } catch (error) {
     return res
       .status(500)
-      .json({ error })
+      .json({ error: error.message || error })
   }
 }
