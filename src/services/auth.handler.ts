@@ -101,8 +101,10 @@ export const googleCallback = () => {
 export default (role: string): RequestHandler => {
   return async (req: Request, res: Response, next: Function) => {
     try {
-      const [ type, token ] = req.headers.authorization.split(' ')
-
+      const { authorization } = req.headers
+      if (!authorization) 
+        next(new JsonWebTokenError('Bearer token is required!'))
+      const [ type, token ] = authorization.split(' ')
       if (type !== 'Bearer')
         next(new JsonWebTokenError('Bearer token is required!'))
 

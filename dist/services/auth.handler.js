@@ -96,7 +96,10 @@ exports.googleCallback = () => {
 exports.default = (role) => {
     return (req, res, next) => __awaiter(this, void 0, void 0, function* () {
         try {
-            const [type, token] = req.headers.authorization.split(' ');
+            const { authorization } = req.headers;
+            if (!authorization)
+                next(new jsonwebtoken_1.JsonWebTokenError('Bearer token is required!'));
+            const [type, token] = authorization.split(' ');
             if (type !== 'Bearer')
                 next(new jsonwebtoken_1.JsonWebTokenError('Bearer token is required!'));
             const { _id } = jsonwebtoken_1.verify(token, process.env.JWT_SECRET || '難しい鍵');
