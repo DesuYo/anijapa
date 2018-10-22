@@ -80,6 +80,7 @@ export const googleCallback = () => {
       user = (await db['users']
         .create({
           googleID: id,
+          
           firstName: given_name,
           lastName: family_name,
           photo: picture
@@ -107,16 +108,13 @@ export default (role: string): RequestHandler => {
 
       const { _id }: any = verify(token, process.env.JWT_SECRET || '難しい鍵')
       const doc = await Users
-        .findById(_id, {
-          password: 0,
-          __v: 0
-        })
+        .findById(_id, { __v: 0 })
         .exec()
-      const user = doc.toObject()
 
-      if (!user) 
+      if (!doc) 
         next(new JsonWebTokenError('User with this token does not exist'))
 
+      const user = doc.toObject()
       if (rolesMap[user.role] <  rolesMap[role]) 
         next(new PermissionError('Permission denied for this action'))
 

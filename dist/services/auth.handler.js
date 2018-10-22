@@ -101,14 +101,11 @@ exports.default = (role) => {
                 next(new jsonwebtoken_1.JsonWebTokenError('Bearer token is required!'));
             const { _id } = jsonwebtoken_1.verify(token, process.env.JWT_SECRET || '難しい鍵');
             const doc = yield users_model_1.default
-                .findById(_id, {
-                password: 0,
-                __v: 0
-            })
+                .findById(_id, { __v: 0 })
                 .exec();
-            const user = doc.toObject();
-            if (!user)
+            if (!doc)
                 next(new jsonwebtoken_1.JsonWebTokenError('User with this token does not exist'));
+            const user = doc.toObject();
             if (rolesMap[user.role] < rolesMap[role])
                 next(new PermissionError('Permission denied for this action'));
             req.user = user;
