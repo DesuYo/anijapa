@@ -10,7 +10,7 @@
     "sourceMap": true
   },
   "include": [
-    "**/*"
+    "**/*", "../webpack.config.js"
   ],
   "exclude": [
     "../node_modules",
