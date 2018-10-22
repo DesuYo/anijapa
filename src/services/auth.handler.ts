@@ -9,12 +9,6 @@ const rolesMap: any = {
   overlord: 2
 }
 
-export class OAuthError extends Error {
-  constructor (msg: string) {
-    super(msg)
-  }
-}
-
 export class PermissionError {
   public message: string
   constructor (msg: string) {
@@ -25,7 +19,7 @@ export class PermissionError {
 export const googleAuthorize = (scope: string) => {
   return async (req: Request, res: Response, next: Function) => {
     try {
-      const { protocol, path } = req
+      const { path } = req
       const { GOOGLE_ID } = process.env
       res.redirect(
         'https://accounts.google.com/o/oauth2/v2/auth' +
@@ -40,13 +34,11 @@ export const googleAuthorize = (scope: string) => {
   }
 }
 
-export const googleCallback = () => {
+export const googleCallback = (): RequestHandler => {
   return async (req: Request, res: Response, next: Function) => {
     try {
-      const { protocol, path, query, db } = req
+      const { path, query, db } = req
       const { GOOGLE_ID, GOOGLE_SECRET, JWT_SECRET } = process.env
-      if (!query['code']) 
-        return next(new OAuthError('Missing authorization code.'))
 
       const { access_token } = (await httpClient
         .post('https://www.googleapis.com/oauth2/v4/token')
@@ -71,16 +63,17 @@ export const googleCallback = () => {
         .findOne({ googleID: data.id })
         .exec()
         
-      
       if (user) return res
         .status(200)
-        .json({ token: sign({ _id: user.toObject()._id }, JWT_SECRET) })
+        .json({ 
+          accessToken: sign({ _id: user.toObject()._id }, JWT_SECRET, { expiresIn: '2d' }),
+          tokenType: 'Bearer' 
+        })
       
       const { id, given_name, family_name, picture } = data
       user = (await db['users']
         .create({
           googleID: id,
-          
           firstName: given_name,
           lastName: family_name,
           photo: picture
@@ -89,7 +82,10 @@ export const googleCallback = () => {
       
       return res
         .status(201)
-        .json({ token: sign({ _id: user._id }, JWT_SECRET) })
+        .json({ 
+          accessToken: sign({ _id: user._id }, JWT_SECRET, { expiresIn: '2d' }),
+          tokenType: 'Bearer' 
+        })
       
     } catch (error) {
       return next(error)
