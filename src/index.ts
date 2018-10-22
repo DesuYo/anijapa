@@ -10,7 +10,7 @@ import routes from './routes/index.routes'
 import errorsHandler from './services/errors.handler'
 
 dotenv.config()
-const { PORT = 777, FACEBOOK_ID, FACEBOOK_SECRET } = process.env
+const { PORT = 777 } = process.env
 
 export default express()
   .set('view engine', 'pug')

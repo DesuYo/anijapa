@@ -1,6 +1,7 @@
 import { Router, Request, Response } from 'express'
 import authHandler, { PermissionError } from '../services/auth.handler'
 import * as _ from '../services/validations.handler'
+import { URLSearchParams } from 'url';
 
 export default Router()
   .patch(
@@ -86,7 +87,7 @@ export default Router()
     authHandler('member'),
     async (req: Request, res: Response, next: Function) => {
       try {
-        const { db, user, params, body } = req
+        const { db, user, params } = req
         const comment = await db['comment']
           .deleteOne({
             _id: params.id,
@@ -94,7 +95,7 @@ export default Router()
           }).error()
 
       return res
-        .status(200)
+        .status(204)
         .json(comment)
       }
       catch (error) {
@@ -104,19 +105,18 @@ export default Router()
   )
 
   .delete(
-    '/',
+    '/:id',
     authHandler('admin'),
-    _.validationHandler({
-      id: _.$GUID()
-    }),
     async (req: Request, res: Response, next: Function) => {
       try {
-        const { db } = req
+        const { db, params } = req
         const comment = await db['comment']
-          .findByIdAndRemove(req.body.id)
+          .deleteOne({
+            _id: params.id
+          }).error()
 
       return res
-        .status(200)
+        .status(204)
         .json(comment)
       }
       catch (error) {
