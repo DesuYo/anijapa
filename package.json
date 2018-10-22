@@ -2,7 +2,7 @@
   "name": "anijapa",
   "version": "1.0.0",
   "description": "",
-  "main": "dist/index.js",
+  "main": "built/server.js",
   "scripts": {
     "start": "node built/server.js",
     "test": "jest --watchAll",
