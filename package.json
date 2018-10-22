@@ -4,7 +4,7 @@
   "description": "",
   "main": "dist/index.js",
   "scripts": {
-    "start": "node dist",
+    "start": "node built/server.js",
     "test": "jest --watchAll",
     "watch-ts": "tsc -w",
     "watch-node": "nodemon dist/server.js",
