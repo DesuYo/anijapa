@@ -25,9 +25,6 @@ declare global {
       user: {
         id: string
         [name: string]: any
-      },
-      headers: {
-        [name: string]: any
       }
     }
   }

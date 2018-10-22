@@ -13,11 +13,9 @@ dotenv.config()
 const { PORT = 777 } = process.env
 
 export default express()
-  .set('view engine', 'pug')
-  .set('views', join(__dirname, 'public', 'views'))
   .use(morgan('dev'))
-  .use(express.static(join(__dirname, 'public')))
   .use(cors())
+  .use(express.static(join(__dirname, '..', 'client')))
   .use(bodyParser.json())
   .use(bodyParser.urlencoded({ extended: true }))
   .use(connectionHandler)

@@ -6,6 +6,9 @@ export default Router()
   .post(
     '/',
     authHandler('admin'),
+    _.validationHandler({
+      
+    }),
     async (req: Request, res: Response, next: Function) => {
       try {
         const { db, body } = req

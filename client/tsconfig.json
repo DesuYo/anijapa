@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "target": "es5",
+    "lib": ["es7", "dom"],
+    "module": "system",
+    "noImplicitAny": true,
+    "removeComments": true,
+    "preserveConstEnums": true,
+    "outFile": "../built/client.js",
+    "sourceMap": true
+  },
+  "include": [
+    "**/*"
+  ],
+  "exclude": [
+    "../node_modules",
+    "**/*.spec.ts"
+  ]
+}
