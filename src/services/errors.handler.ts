@@ -3,7 +3,7 @@ import { ValidationErrorItem } from 'joi'
 import { Request, Response } from 'express'
 import { PermissionError } from './auth.handler'
 
-export default (error: any, req: Request, res: Response, next: Function) => {
+export default (error: any, _: Request, res: Response, __: Function) => {
   try {
     switch (true) {
       case error instanceof JsonWebTokenError || error instanceof TokenExpiredError: return res
