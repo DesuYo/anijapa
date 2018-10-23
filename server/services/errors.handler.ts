@@ -1,7 +1,14 @@
 import { JsonWebTokenError, TokenExpiredError } from 'jsonwebtoken'
 import { ValidationErrorItem } from 'joi'
 import { Request, Response } from 'express'
-import { PermissionError } from './auth.handler'
+
+export class NotFoundError extends Error {
+  constructor (msg: string) { super(msg) }
+}
+
+export class PermissionError extends Error {
+  constructor () { super('Permission denied for this action.') }
+}
 
 export default (error: any, _: Request, res: Response, __: Function) => {
   try {
@@ -12,7 +19,7 @@ export default (error: any, _: Request, res: Response, __: Function) => {
 
       case error instanceof PermissionError: return res
         .status(403)
-        .json({ error })
+        .json({ error: error.message })
         
       case error.isJoi: return res
         .status(400)
@@ -24,6 +31,10 @@ export default (error: any, _: Request, res: Response, __: Function) => {
       case error.name === 'MongoError' && error.code === 11000: return res
         .status(400)
         .json({ error: error.errmsg })
+
+      case error instanceof NotFoundError: return res
+        .status(404)
+        .json({ error: error.message })
   
       default: throw error
     }

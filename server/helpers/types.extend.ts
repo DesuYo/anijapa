@@ -23,7 +23,7 @@ declare global {
       }
       oauth: IOAuthConfig
       user: {
-        id: string
+        _id: string
         [name: string]: any
       }
     }

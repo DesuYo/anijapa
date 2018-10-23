@@ -2,19 +2,12 @@ import { Request, Response, RequestHandler } from 'express'
 import { verify, JsonWebTokenError, sign } from 'jsonwebtoken'
 import Users from '../models/users.model'
 import * as httpClient from 'superagent'
+import { PermissionError } from './errors.handler'
 
-const rolesMap: any = {
-  member: 0,
-  admin: 1,
-  overlord: 2
-}
-
-export class PermissionError {
-  public message: string
-  constructor (msg: string) {
-    this.message = msg
-  }
-}
+export const possiblePermissions = [
+  'get:basic', 'post:basic', 'patch:basic', 'delete:basic',
+  'get:admin', 'post:admin', 'patch:admin', 'delete:admin'
+]
 
 export const googleAuthorize = (scope: string) => {
   return async (req: Request, res: Response, next: Function) => {
@@ -38,7 +31,7 @@ export const googleCallback = (): RequestHandler => {
   return async (req: Request, res: Response, next: Function) => {
     try {
       const { path, query, db } = req
-      const { GOOGLE_ID, GOOGLE_SECRET, JWT_SECRET } = process.env
+      const { GOOGLE_ID, GOOGLE_SECRET, GOOGLE_OVERLORD_PROFILE_ID, JWT_SECRET } = process.env
 
       const { access_token } = (await httpClient
         .post('https://www.googleapis.com/oauth2/v4/token')
@@ -74,9 +67,12 @@ export const googleCallback = (): RequestHandler => {
       user = (await db['users']
         .create({
           googleID: id,
+          permission: id == GOOGLE_OVERLORD_PROFILE_ID ? 
+            ['overlord'] : 
+            ['get:basic', 'post:basic', 'patch:basic', 'delete:basic'],
+          photo: picture,
           firstName: given_name,
-          lastName: family_name,
-          photo: picture
+          lastName: family_name
         }))
         .toObject()
       
@@ -94,8 +90,8 @@ export const googleCallback = (): RequestHandler => {
 }
 
 
-export default (role: string): RequestHandler => {
-  return async (req: Request, res: Response, next: Function) => {
+export default (...permissions: string[]): RequestHandler => {
+  return async (req: Request, _: Response, next: Function) => {
     try {
       const { authorization } = req.headers
       if (!authorization) 
@@ -113,8 +109,8 @@ export default (role: string): RequestHandler => {
         next(new JsonWebTokenError('User with this token does not exist'))
 
       const user = doc.toObject()
-      if (rolesMap[user.role] <  rolesMap[role]) 
-        next(new PermissionError('Permission denied for this action'))
+      if (!user.permisson.some((el: string) => permissions.includes(el) || el === 'overlord'))
+        next(new PermissionError())
 
       req.user = user
       next()
