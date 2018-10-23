@@ -1,7 +1,7 @@
 import * as mongoose from 'mongoose'
 import { MongooseSchema } from '../helpers/types.import'
 
-const ID = mongoose.Types.ObjectId
+const ID = mongoose.Schema.Types.ObjectId
 
 const commentSchema = new MongooseSchema({
   text: String,
