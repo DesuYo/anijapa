@@ -15,7 +15,7 @@ const { PORT = 777 } = process.env
 export default express()
   .use(morgan('dev'))
   .use(cors())
-  .use(express.static(join(__dirname, '')))
+  .use(express.static(join(__dirname, 'public')))
   .use(bodyParser.json())
   .use(bodyParser.urlencoded({ extended: true }))
   .use(connectionHandler)
