@@ -109,10 +109,9 @@ export default (...permissions: string[]): RequestHandler => {
         next(new JsonWebTokenError('User with this token does not exist'))
 
       const user = doc.toObject()
-      if (
-        !(user.permissions instanceof Array) || 
-        !user.permissions.some((el: string) => permissions.includes(el) || el === 'overlord')
-      )
+      if (!(user.permissions instanceof Array))
+        next(new PermissionError())
+      if (!user.permissions.some((el: string) => permissions.includes(el) || el === 'overlord'))
         next(new PermissionError())
 
       req.user = user

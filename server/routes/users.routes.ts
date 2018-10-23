@@ -117,8 +117,8 @@ export default Router()
       }
     }
   )
-  .delete(
+  /*.delete(
     '/users/:id',
     authHandler('overlord')
-  )
+  )*/
 
