@@ -1,14 +1,14 @@
 import * as mongoose from 'mongoose'
-import { Request, Response } from 'express'
 import models from '../models/index.model'
+import { Request, Response } from '../helpers/types.import'
 
-export default async (req: Request, _: Response, next: Function) => {
+export default async (req: Request, _: Response, next: Function): Promise<any> => {
   try {
     const { DB_URI } = process.env
     await mongoose.connect(DB_URI, { useNewUrlParser: true })
     req.db = models
-    next()
+    return next()
   } catch (error) {
-    next(error)
+    return next(error)
   }
 }

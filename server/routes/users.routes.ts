@@ -1,7 +1,8 @@
-import { Router, Request, Response } from 'express'
+import { Router } from 'express'
 import authHandler, { possiblePermissions } from '../services/auth.handler'
 import * as _ from '../services/validations.handler'
 import { NotFoundError, PermissionError } from '../services/errors.handler'
+import { Request, Response } from '../helpers/types.import'
 
 export default Router()
   .get(

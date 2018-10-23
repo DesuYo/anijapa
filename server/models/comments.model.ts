@@ -1,12 +1,12 @@
-import { Schema, model } from 'mongoose'
-const GUID = Schema.Types.ObjectId
+import { model } from 'mongoose'
+import { MongooseSchema, ObjectID } from '../helpers/types.import'
 
-const commentSchema = new Schema({
+const commentSchema = new MongooseSchema({
   text: String,
-  userId: { type: GUID, ref: 'User' },
-  animeId: { type: GUID, ref: 'Anime' },
-  likes: [{ type: GUID, ref: 'User' }],
-  replies: [{ type: GUID, ref: 'Comment' }]
+  userId: { type: ObjectID, ref: 'User' },
+  animeId: { type: ObjectID, ref: 'Anime' },
+  likes: [{ type: ObjectID, ref: 'User' }],
+  replies: [{ type: ObjectID, ref: 'Comment' }]
 }, {
   timestamps: true
 })

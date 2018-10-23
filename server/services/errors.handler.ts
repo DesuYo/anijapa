@@ -1,6 +1,4 @@
-import { JsonWebTokenError, TokenExpiredError } from 'jsonwebtoken'
-import { ValidationErrorItem } from 'joi'
-import { Request, Response } from 'express'
+import { Request, Response, JsonWebTokenError, TokenExpiredError, ValidationErrorItem } from '../helpers/types.import'
 
 export class NotFoundError extends Error {
   constructor (msg: string) { super(msg) }

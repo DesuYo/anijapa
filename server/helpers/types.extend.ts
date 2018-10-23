@@ -1,4 +1,4 @@
-import { Model, Document } from 'mongoose'
+import { MongooseDocument, MongooseModel, ObjectID } from './types.import'
 
 declare global {
   interface ICredentials {
@@ -19,11 +19,11 @@ declare global {
   namespace Express {
     interface Request {
       db: {
-        [name: string]: Model<Document>
+        [name: string]: MongooseModel<MongooseDocument>
       }
       oauth: IOAuthConfig
       user: {
-        _id: string
+        _id: ObjectID
         [name: string]: any
       }
     }

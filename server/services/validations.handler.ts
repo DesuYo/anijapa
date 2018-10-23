@@ -1,5 +1,5 @@
-import { Request, Response, RequestHandler } from 'express'
 import * as Joi from 'joi'
+import { Request, Response, RequestHandler } from '../helpers/types.import'
 
 const STR = (maxLength: number) => Joi.string().trim().max(maxLength)
 const NUM = (max: number) => Joi.number().max(max)
