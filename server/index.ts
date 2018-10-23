@@ -15,7 +15,7 @@ const { PORT = 777 } = process.env
 export default express()
   .use(morgan('dev'))
   .use(cors())
-  .use(express.static(join(__dirname, 'public')))
+  .use('/static', express.static(join(__dirname, 'public')))
   .use(bodyParser.json())
   .use(bodyParser.urlencoded({ extended: true }))
   .use(connectionHandler)
@@ -25,7 +25,7 @@ export default express()
   .use((_: express.Request, res: express.Response) => {
     return res
       .status(200)
-      .sendFile(join(__dirname, 'public', 'index.html'))
+      .sendFile(join(__dirname, 'built', 'public', 'index.html'))
   })
   .use(errorsHandler)
   .listen(PORT, () => console.log(`I'm gonna poop on the plate, bratok...`))
