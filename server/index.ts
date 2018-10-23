@@ -25,7 +25,7 @@ export default express()
   .use((_: express.Request, res: express.Response) => {
     return res
       .status(200)
-      .sendFile('/public/index.html')
+      .sendFile(join(__dirname, 'public', 'index.html'))
   })
   .use(errorsHandler)
   .listen(PORT, () => console.log(`I'm gonna poop on the plate, bratok...`))
