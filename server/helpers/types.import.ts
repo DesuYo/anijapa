@@ -1,6 +1,6 @@
 export { Request, Response, RequestHandler } from 'express'
-export { Document as MongooseDocument, Schema as MongooseSchema, Model as MongooseModel } from 'mongoose'
-export { ObjectID } from 'bson'
+export { Model as MongooseModel, Document as MongooseDocument, Schema as MongooseSchema } from 'mongoose'
 export { JsonWebTokenError, TokenExpiredError } from 'jsonwebtoken'
 export { ValidationErrorItem, SchemaLike as JoiSchemaLike } from 'joi'
-
+import { Schema } from 'mongoose'
+export const ObjectID = Schema.Types.ObjectId
