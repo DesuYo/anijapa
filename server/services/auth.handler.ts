@@ -9,12 +9,6 @@ const rolesMap: any = {
   overlord: 2
 }
 
-export class OAuthError extends Error {
-  constructor (msg: string) {
-    super(msg)
-  }
-}
-
 export class PermissionError {
   public message: string
   constructor (msg: string) {
@@ -25,12 +19,12 @@ export class PermissionError {
 export const googleAuthorize = (scope: string) => {
   return async (req: Request, res: Response, next: Function) => {
     try {
-      const { protocol, path } = req
+      const { path } = req
       const { GOOGLE_ID } = process.env
       res.redirect(
         'https://accounts.google.com/o/oauth2/v2/auth' +
         `?client_id=${GOOGLE_ID}` +
-        `&redirect_uri=${protocol}://${req.get('host')}${path}/callback` +
+        `&redirect_uri=https://${req.get('host')}${path}/callback` +
         `&scope=${scope}` +
         `&response_type=code`
       )
@@ -40,13 +34,11 @@ export const googleAuthorize = (scope: string) => {
   }
 }
 
-export const googleCallback = () => {
+export const googleCallback = (): RequestHandler => {
   return async (req: Request, res: Response, next: Function) => {
     try {
-      const { protocol, path, query, db } = req
+      const { path, query, db } = req
       const { GOOGLE_ID, GOOGLE_SECRET, JWT_SECRET } = process.env
-      if (!query['code']) 
-        return next(new OAuthError('Missing authorization code.'))
 
       const { access_token } = (await httpClient
         .post('https://www.googleapis.com/oauth2/v4/token')
@@ -56,25 +48,27 @@ export const googleCallback = () => {
           client_id: GOOGLE_ID,
           client_secret: GOOGLE_SECRET,
           code: query['code'],
-          redirect_uri: `${protocol}://${req.get('host')}${path}`,
+          redirect_uri: `https://${req.get('host')}${path}`,
           grant_type: 'authorization_code'
         }))
         .body
-      console.log(access_token)
+    
       const data = (await httpClient
         .get('https://www.googleapis.com/oauth2/v1/userinfo')
         .set('accept', 'application/json')
         .query({ access_token }))
         .body
-      console.log(data)
+      
       let user = await db['users']
         .findOne({ googleID: data.id })
         .exec()
         
-      console.log(user)
       if (user) return res
         .status(200)
-        .json({ token: sign({ _id: user.toObject()._id }, JWT_SECRET) })
+        .json({ 
+          accessToken: sign({ _id: user.toObject()._id }, JWT_SECRET, { expiresIn: '2d' }),
+          tokenType: 'Bearer' 
+        })
       
       const { id, given_name, family_name, picture } = data
       user = (await db['users']
@@ -88,7 +82,10 @@ export const googleCallback = () => {
       
       return res
         .status(201)
-        .json({ token: sign({ _id: user._id }, JWT_SECRET) })
+        .json({ 
+          accessToken: sign({ _id: user._id }, JWT_SECRET, { expiresIn: '2d' }),
+          tokenType: 'Bearer' 
+        })
       
     } catch (error) {
       return next(error)
@@ -100,23 +97,22 @@ export const googleCallback = () => {
 export default (role: string): RequestHandler => {
   return async (req: Request, res: Response, next: Function) => {
     try {
-      const [ type, token ] = req.headers.authorization.split(' ')
-
+      const { authorization } = req.headers
+      if (!authorization) 
+        next(new JsonWebTokenError('Bearer token is required!'))
+      const [ type, token ] = authorization.split(' ')
       if (type !== 'Bearer')
         next(new JsonWebTokenError('Bearer token is required!'))
 
       const { _id }: any = verify(token, process.env.JWT_SECRET || '難しい鍵')
       const doc = await Users
-        .findById(_id, {
-          password: 0,
-          __v: 0
-        })
+        .findById(_id, { __v: 0 })
         .exec()
-      const user = doc.toObject()
 
-      if (!user) 
+      if (!doc) 
         next(new JsonWebTokenError('User with this token does not exist'))
 
+      const user = doc.toObject()
       if (rolesMap[user.role] <  rolesMap[role]) 
         next(new PermissionError('Permission denied for this action'))
 

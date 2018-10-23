@@ -8,30 +8,24 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-module.exports = (sample) => {
+exports.default = (sample) => {
     return (req, res, next) => __awaiter(this, void 0, void 0, function* () {
         try {
             const { error, value } = sample
                 .options({
                 abortEarly: false,
-                allowUnknown: true
+                allowUnknown: true,
+                stripUnknown: true
             })
                 .validate(req.body);
             if (error)
-                return res
-                    .status(400)
-                    .json(error.details.map((err) => ({
-                    key: err.context.key,
-                    message: err.message
-                })));
+                next(error);
             req.body = value;
             return next();
         }
         catch (error) {
-            res
-                .status(500)
-                .json(error);
+            next(error);
         }
     });
 };
-//# sourceMappingURL=validations.service.js.map
+//# sourceMappingURL=validations.handler.js.map
