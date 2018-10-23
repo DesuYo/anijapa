@@ -29,4 +29,3 @@ export default express()
   })
   .use(errorsHandler)
   .listen(PORT, () => console.log(`I'm gonna poop on the plate, bratok...`))
-

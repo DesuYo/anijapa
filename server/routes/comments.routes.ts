@@ -1,7 +1,6 @@
 import { Router, Request, Response } from 'express'
 import authHandler, { PermissionError } from '../services/auth.handler'
 import * as _ from '../services/validations.handler'
-import { URLSearchParams } from 'url';
 
 export default Router()
   .patch(
