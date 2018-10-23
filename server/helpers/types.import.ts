@@ -3,4 +3,4 @@ export { Model as MongooseModel, Document as MongooseDocument, Schema as Mongoos
 export { JsonWebTokenError, TokenExpiredError } from 'jsonwebtoken'
 export { ValidationErrorItem, SchemaLike as JoiSchemaLike } from 'joi'
 import { Schema } from 'mongoose'
-export const ObjectID = Schema.Types.ObjectId
+export type MongooseDocumentID = Schema.Types.ObjectId

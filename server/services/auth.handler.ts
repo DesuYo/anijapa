@@ -2,7 +2,8 @@ import { verify, sign } from 'jsonwebtoken'
 import Users, { IUser } from '../models/users.model'
 import * as httpClient from 'superagent'
 import { PermissionError } from './errors.handler'
-import { Request, Response, RequestHandler, JsonWebTokenError, MongooseDocument, ObjectID } from '../helpers/types.import'
+import { Request, Response, RequestHandler, 
+  JsonWebTokenError, MongooseDocument } from '../helpers/types.import'
 
 export const possiblePermissions = [
   'get:basic', 'post:basic', 'patch:basic', 'delete:basic',

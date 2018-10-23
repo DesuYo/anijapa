@@ -1,12 +1,14 @@
 import { model } from 'mongoose'
-import { MongooseSchema, ObjectID } from '../helpers/types.import'
+import { MongooseSchema } from '../helpers/types.import'
+
+const ID = MongooseSchema.Types.ObjectId
 
 const commentSchema = new MongooseSchema({
   text: String,
-  userId: { type: ObjectID, ref: 'User' },
-  animeId: { type: ObjectID, ref: 'Anime' },
-  likes: [{ type: ObjectID, ref: 'User' }],
-  replies: [{ type: ObjectID, ref: 'Comment' }]
+  userId: { type: ID, ref: 'User' },
+  animeId: { type: ID, ref: 'Anime' },
+  likes: [{ type: ID, ref: 'User' }],
+  replies: [{ type: ID, ref: 'Comment' }]
 }, {
   timestamps: true
 })

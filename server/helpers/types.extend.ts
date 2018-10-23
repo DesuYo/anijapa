@@ -1,4 +1,4 @@
-import { MongooseDocument, MongooseModel, ObjectID } from './types.import'
+import { MongooseDocument, MongooseModel, MongooseDocumentID } from './types.import'
 
 declare global {
   interface ICredentials {
@@ -23,7 +23,7 @@ declare global {
       }
       oauth: IOAuthConfig
       user: {
-        _id: ObjectID
+        _id: MongooseDocumentID
         [name: string]: any
       }
     }

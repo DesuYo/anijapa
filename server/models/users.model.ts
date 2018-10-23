@@ -1,14 +1,14 @@
 import { model } from 'mongoose'
-import { MongooseSchema, ObjectID } from '../helpers/types.import'
+import { MongooseSchema, MongooseDocumentID } from '../helpers/types.import'
 
 export interface IUser {
-  _id: ObjectID
-  googleID: string,
-  permissions: string[],
-  username: string,
-  photo: string,
-  firstName: string,
-  lastName: string,
+  _id: MongooseDocumentID
+  googleID: string
+  permissions: string[]
+  username: string
+  photo: string
+  firstName: string
+  lastName: string
   birthDate: Date
 }
 
