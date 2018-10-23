@@ -70,11 +70,12 @@ export default Router()
     async (req: Request, res: Response, next: Function) => {
       try {
         const { db, query } = req
+        const { username = '', firstName = '', lastName = ''} = query
         const result = await db['users']
           .find({ 
-            username: new RegExp(`.*${query.username}.*`),
-            firstName: new RegExp(`.*${query.firstName}.*`),
-            lastName: new RegExp(`.*${query.lastName}.*`) 
+            username: new RegExp(`.*${username}.*`),
+            firstName: new RegExp(`.*${firstName}.*`),
+            lastName: new RegExp(`.*${lastName}.*`) 
           })
           .exec()
         return res
