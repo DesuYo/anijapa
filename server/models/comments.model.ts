@@ -1,7 +1,7 @@
-import { model } from 'mongoose'
+import * as mongoose from 'mongoose'
 import { MongooseSchema } from '../helpers/types.import'
 
-const ID = MongooseSchema.Types.ObjectId
+const ID = mongoose.Types.ObjectId
 
 const commentSchema = new MongooseSchema({
   text: String,
@@ -13,4 +13,4 @@ const commentSchema = new MongooseSchema({
   timestamps: true
 })
 
-export default model('comment', commentSchema)
+export default mongoose.model('comment', commentSchema)
