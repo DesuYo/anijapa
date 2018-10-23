@@ -1,5 +1,6 @@
 import { Router, Request, Response } from 'express'
-import authHandler, { PermissionError } from '../services/auth.handler'
+import authHandler from '../services/auth.handler'
+import { PermissionError } from '../services/errors.handler'
 import * as _ from '../services/validations.handler'
 
 export default Router()

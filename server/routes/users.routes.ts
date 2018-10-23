@@ -1,49 +1,33 @@
-import { Router, Request, Response } from 'express'
-import authHandler from '../services/auth.handler'
+import { Router } from 'express'
+import authHandler, { possiblePermissions } from '../services/auth.handler'
 import * as _ from '../services/validations.handler'
-import { sign } from 'jsonwebtoken'
-import { hashSync } from 'bcryptjs'
+import { NotFoundError, PermissionError } from '../services/errors.handler'
+import { Request, Response } from '../helpers/types.import'
 
 export default Router()
-  .post(
-    '/signup', 
-    _.validationHandler({
-      username: _.$SLUG(16),
-      email: _.$EMAIL(),
-      password: _.$PASSWORD(8)
-    }), 
+  .get(
+    '/me',
+    authHandler('get:basic', 'get:admin'),
     async (req: Request, res: Response, next: Function) => {
       try {
-        const { db, body } = req
-        const { _id } = (await db['users']
-          .create({ 
-            ...body, 
-            password: hashSync(body.password) 
-          }))
-          .toObject()
+        const { user } = req
         return res
-          .status(201)
-          .json({ token: sign(
-            { _id }, 
-            process.env.JWT_SECRET || '難しい鍵'
-          )})
+          .status(200)
+          .json(user)
         
       } catch (error) {
         next(error)
       }
     }
   )
-  
   .patch(
     '/me',
-    authHandler('member'),
+    authHandler('patch:basic', 'patch:admin'),
     _.validationHandler({
-      password: _.$VARCHAR(256),
       username: _.SLUG(16),
+      photo: _.URI(256),
       firstName: _.NAME(16),
-      lastName: _.NAME(16),
-      birthDate: _.DATE(),
-      photo: _.URI(256)
+      lastName: _.NAME(16)
     }),
     async (req: Request, res: Response, next: Function) => {
       try {
@@ -63,19 +47,79 @@ export default Router()
       }
     }
   )
-
-  .get(
+  .delete(
     '/me',
-    authHandler('member'),
+    authHandler('delete:basic', 'delete:admin'),
     async (req: Request, res: Response, next: Function) => {
       try {
-        const { user } = req
+        const { db, user } = req
+        await db['users']
+          .deleteOne({ _id: user._id })
+          .exec()
+        res
+          .status(204)
+          .end()
+      } catch (error) {
+        next(error)
+      }
+    }
+  )
+  .get(
+    '/users',
+    authHandler('get:admin'),
+    async (req: Request, res: Response, next: Function) => {
+      try {
+        const { db, query } = req
+        const result = await db['users']
+          .find({ 
+            username: new RegExp(`.*${query.username}.*`),
+            firstName: new RegExp(`.*${query.firstName}.*`),
+            lastName: new RegExp(`.*${query.lastName}.*`) 
+          })
+          .exec()
         return res
           .status(200)
-          .json(user)
+          .json(result)
         
       } catch (error) {
         next(error)
       }
     }
   )
+  .patch(
+    '/users/:id',
+    authHandler('patch:admin'),
+    _.validationHandler({
+      permissions: _.ARRAY(_.ENUM(possiblePermissions)),
+      username: _.SLUG(16),
+      photo: _.URI(256),
+      firstName: _.NAME(16),
+      lastName: _.NAME(16)
+    }),
+    async (req: Request, res: Response, next: Function) => {
+      try {
+        const { db, params, body } = req
+        const target = await db['users']
+          .findById(params.id)
+          .exec()
+        if (!target) 
+          return next(new NotFoundError('User not found'))
+        if (target.toObject().permissions.some((el: string) => el === 'overlord'))
+          return next(new PermissionError())
+        await target
+          .update({ $set: body })
+          .exec()
+        return res
+          .status(204)
+          .end()
+        
+      } catch (error) {
+        next(error)
+      }
+    }
+  )
+  /*.delete(
+    '/users/:id',
+    authHandler('overlord')
+  )*/
+

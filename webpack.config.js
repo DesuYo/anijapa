@@ -23,7 +23,8 @@ module.exports = [
     },
     resolve: {
       extensions: ['.ts', '.js']
-    }
+    },
+    watch: true
   },
   {
     target: 'web',
@@ -31,7 +32,7 @@ module.exports = [
     entry: './client/index.ts',
     output: {
       filename: 'client.js',
-      path: resolve(__dirname, 'built')
+      path: resolve(__dirname, 'built', 'public')
     },
     module: {
       rules: [
@@ -56,7 +57,8 @@ module.exports = [
         template: './client/index.html'
       }),
       new ExtractPlugin('style.css')
-    ]
+    ],
+    watch: true
   }
 ]
 

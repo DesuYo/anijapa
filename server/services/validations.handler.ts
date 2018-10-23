@@ -1,5 +1,5 @@
-import { Request, Response, RequestHandler } from 'express'
 import * as Joi from 'joi'
+import { Request, Response, RequestHandler } from '../helpers/types.import'
 
 const STR = (maxLength: number) => Joi.string().trim().max(maxLength)
 const NUM = (max: number) => Joi.number().max(max)
@@ -13,6 +13,9 @@ export const $GUID = () => STR(64).guid().required()
 
 export const ARRAY = (...type: Joi.SchemaLike[]) => Joi.array().items(type).default([])
 export const $ARRAY = (...type: Joi.SchemaLike[]) => Joi.array().items(type).required()
+
+export const ENUM = (...values: any) => Joi.allow(values)
+export const $ENUM = (...values: any) => Joi.allow(values).required()
 
 export const SLUG = (maxLength: number, def: string = undefined) => STR(maxLength).token().lowercase().default(def)
 export const $SLUG = (maxLength: number) => STR(maxLength).token().lowercase().required()
