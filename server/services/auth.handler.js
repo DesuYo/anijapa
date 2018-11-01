@@ -1,17 +1,16 @@
 import { verify, sign } from 'jsonwebtoken'
-import Users, { IUser } from '../models/users.model'
+import Users from '../models/users.model'
 import * as httpClient from 'superagent'
 import { PermissionError } from './errors.handler'
-import { Request, Response, RequestHandler, 
-  JsonWebTokenError, MongooseDocument } from '../helpers/types.import'
+import { JsonWebTokenError } from '../helpers/types.import'
 
 export const possiblePermissions = [
   'get:basic', 'post:basic', 'patch:basic', 'delete:basic',
   'get:admin', 'post:admin', 'patch:admin', 'delete:admin'
 ]
 
-export const googleAuthorize = (scope: string) => {
-  return (req: Request, res: Response, next: Function): void => {
+export const googleAuthorize = (scope) => {
+  return (req, res, next) => {
     try {
       const { path } = req
       const { GOOGLE_ID } = process.env
@@ -28,8 +27,8 @@ export const googleAuthorize = (scope: string) => {
   }
 }
 
-export const googleCallback = (): RequestHandler => {
-  return async (req: Request, res: Response, next: Function): Promise<Response> => {
+export const googleCallback = () => {
+  return async (req, res, next) => {
     try {
       const { path, query, db } = req
       const { GOOGLE_ID, GOOGLE_SECRET, GOOGLE_OVERLORD_PROFILE_ID, JWT_SECRET } = process.env
@@ -47,13 +46,13 @@ export const googleCallback = (): RequestHandler => {
         }))
         .body
     
-      const data: any = (await httpClient
+      const data = (await httpClient
         .get('https://www.googleapis.com/oauth2/v1/userinfo')
         .set('accept', 'application/json')
         .query({ access_token }))
         .body
       
-      let userDoc: MongooseDocument = await db['users']
+      let userDoc = await db['users']
         .findOne({ googleID: data.id })
         .exec()
         
@@ -90,8 +89,8 @@ export const googleCallback = (): RequestHandler => {
 }
 
 
-export default (...permissions: string[]): RequestHandler => {
-  return async (req: Request, _: Response, next: Function): Promise<any> => {
+export default (...permissions) => {
+  return async (req, _, next) => {
     try {
       const { authorization } = req.headers
       if (!authorization) 
@@ -100,17 +99,17 @@ export default (...permissions: string[]): RequestHandler => {
       if (type !== 'Bearer')
         return next(new JsonWebTokenError('Bearer token is required!'))
 
-      const { _id }: any = verify(token, process.env.JWT_SECRET || '難しい鍵')
-      const userDoc: MongooseDocument = await Users
+      const { _id } = verify(token, process.env.JWT_SECRET || '難しい鍵')
+      const userDoc = await Users
         .findById(_id, { __v: 0 })
         .exec()
 
       if (!userDoc) 
         return next(new JsonWebTokenError('User with this token does not exist'))
 
-      const user: IUser = userDoc.toObject()
-      const scope: Array<string> = user.permissions || []
-      if (!scope.some((el: string) => permissions.includes(el) || el === 'overlord'))
+      const user = userDoc.toObject()
+      const scope = user.permissions || []
+      if (!scope.some((el) => permissions.includes(el) || el === 'overlord'))
         return next(new PermissionError())
 
       req.user = user

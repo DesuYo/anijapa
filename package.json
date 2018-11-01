@@ -5,7 +5,7 @@
   "main": "built/server.js",
   "scripts": {
     "build": "webpack-cli",
-    "start": "node built/server.js",
+    "start": "webpack-cli && nodemon built/server.js",
     "test": "jest --watchAll",
     "watch-ts": "tsc -w",
     "watch-node": "nodemon dist/server.js",
@@ -18,6 +18,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@types/vue": "^2.0.0",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.18.3",
     "cors": "^2.8.4",
@@ -32,6 +33,8 @@
     "typescript": "^3.1.3"
   },
   "devDependencies": {
+    "@babel/core": "^7.1.2",
+    "@babel/preset-env": "^7.1.0",
     "@types/bcryptjs": "^2.4.2",
     "@types/cors": "^2.8.4",
     "@types/dotenv": "^4.0.3",
@@ -41,6 +44,11 @@
     "@types/jsonwebtoken": "^7.2.8",
     "@types/mongoose": "^5.2.19",
     "@types/morgan": "^1.7.35",
+    "babel": "^6.23.0",
+    "babel-cli": "^6.26.0",
+    "babel-loader": "^8.0.4",
+    "babel-plugin-inline-import": "^3.0.0",
+    "babel-polyfill": "^6.26.0",
     "chai-http": "^4.2.0",
     "extract-text-webpack-plugin": "^4.0.0-alpha.0",
     "got": "^9.2.2",
@@ -51,6 +59,7 @@
     "supertest": "^3.3.0",
     "ts-loader": "^5.2.2",
     "vue": "^2.5.17",
+    "vue-loader": "^15.4.2",
     "webpack": "^4.22.0",
     "webpack-cli": "^3.1.2",
     "webpack-node-externals": "^1.7.2"

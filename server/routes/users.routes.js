@@ -2,13 +2,12 @@ import { Router } from 'express'
 import authHandler, { possiblePermissions } from '../services/auth.handler'
 import * as _ from '../services/validations.handler'
 import { NotFoundError, PermissionError } from '../services/errors.handler'
-import { Request, Response } from '../helpers/types.import'
 
 export default Router()
   .get(
     '/me',
     authHandler('get:basic', 'get:admin'),
-    async (req: Request, res: Response, next: Function) => {
+    async (req, res, next) => {
       try {
         const { user } = req
         return res
@@ -29,7 +28,7 @@ export default Router()
       firstName: _.NAME(16),
       lastName: _.NAME(16)
     }),
-    async (req: Request, res: Response, next: Function) => {
+    async (req, res, next) => {
       try {
         const { db, user, body } = req
         const result = await db['users']
@@ -50,7 +49,7 @@ export default Router()
   .delete(
     '/me',
     authHandler('delete:basic', 'delete:admin'),
-    async (req: Request, res: Response, next: Function) => {
+    async (req, res, next) => {
       try {
         const { db, user } = req
         await db['users']
@@ -67,7 +66,7 @@ export default Router()
   .get(
     '/users',
     authHandler('get:admin'),
-    async (req: Request, res: Response, next: Function) => {
+    async (req, res, next) => {
       try {
         const { db, query } = req
         const result = await db['users']
@@ -96,7 +95,7 @@ export default Router()
       firstName: _.NAME(16),
       lastName: _.NAME(16)
     }),
-    async (req: Request, res: Response, next: Function) => {
+    async (req, res, next) => {
       try {
         const { db, params, body } = req
         const target = await db['users']
@@ -104,7 +103,7 @@ export default Router()
           .exec()
         if (!target) 
           return next(new NotFoundError('User not found'))
-        if (target.toObject().permissions.some((el: string) => el === 'overlord'))
+        if (target.toObject().permissions.some((el) => el === 'overlord'))
           return next(new PermissionError())
         await target
           .update({ $set: body })
@@ -118,8 +117,3 @@ export default Router()
       }
     }
   )
-  /*.delete(
-    '/users/:id',
-    authHandler('overlord')
-  )*/
-

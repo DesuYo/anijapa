@@ -1,4 +1,4 @@
-import { Router, Request, Response } from 'express'
+import { Router } from 'express'
 import authHandler from '../services/auth.handler'
 import * as _ from '../services/validations.handler'
 
@@ -6,7 +6,7 @@ export default Router()
   .patch(
     '/:id/likes',
     authHandler('patch:basic', 'patch:admin'),
-    async (req: Request, res: Response, next: Function) => {
+    async (req, res, next) => {
       try {
         const { db, user, params } = req
         const comment = await db['comments']
@@ -41,7 +41,7 @@ export default Router()
       replies: _.ARRAY(_.GUID()),
       likes: _.ARRAY(_.GUID())
     }),
-    async (req: Request, res: Response, next: Function) => {
+    async (req, res, next) => {
       try {
         const { body, user, db } = req
         const comment = new db['comments']({ ...body, userId: user._id })
@@ -61,7 +61,7 @@ export default Router()
     _.validationHandler({
       text: _.$VARCHAR(300)
     }),
-    async (req: Request, res: Response, next: Function) => {
+    async (req, res, next) => {
       try {
         const { db, user, params, body } = req
         const result = await db['comment']
@@ -84,7 +84,7 @@ export default Router()
   .delete(
     '/:id',
     authHandler('delete:basic', 'delete:admin'),
-    async (req: Request, res: Response, next: Function) => {
+    async (req, res, next) => {
       try {
         const { db, user, params } = req
         const comment = await db['comment']
@@ -106,7 +106,7 @@ export default Router()
   .delete(
     '/:id',
     authHandler('delete:admin'),
-    async (req: Request, res: Response, next: Function) => {
+    async (req, res, next) => {
       try {
         const { db, params } = req
         const comment = await db['comment']
@@ -127,7 +127,7 @@ export default Router()
   .get(
     '/',
     authHandler('get:admin'),
-    async (req: Request, res: Response, next: Function) => {
+    async (req, res, next) => {
       try {
         const { text = '', userId = '' } = req.query
 

@@ -1,3 +1,4 @@
+import 'babel-polyfill'
 import * as dotenv from 'dotenv'
 import * as express from 'express'
 import * as bodyParser from 'body-parser'
@@ -15,17 +16,17 @@ const { PORT = 777 } = process.env
 export default express()
   .use(morgan('dev'))
   .use(cors())
-  .use(express.static(join(__dirname, 'public')))
+  .use('/static', express.static('built/public'))
   .use(bodyParser.json())
   .use(bodyParser.urlencoded({ extended: true }))
   .use(connectionHandler)
   .get('/google', googleAuthorize('https://www.googleapis.com/auth/userinfo.profile'))
   .all('/google/callback', googleCallback())
   .use('/api', routes)
-  .use((_: express.Request, res: express.Response) => {
+  .get('/', (_, res) => {
     return res
       .status(200)
-      .sendFile('/index.html')
+      .sendFile(join(__dirname, 'index.html'))
   })
   .use(errorsHandler)
   .listen(PORT, () => console.log(`I'm gonna poop on the plate, bratok...`))
