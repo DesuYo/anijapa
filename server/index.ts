@@ -1,4 +1,14 @@
-import * as dotenv from 'dotenv'
+import { createServer } from 'http2'
+import { ApolloServer, PubSub } from 'apollo-server-express'
+
+const apolloServer = new ApolloServer({
+  typeDefs: ''
+})
+
+
+
+
+/*import * as dotenv from 'dotenv'
 import * as express from 'express'
 import * as bodyParser from 'body-parser'
 import * as cors from 'cors'
@@ -13,6 +23,8 @@ dotenv.config()
 const { PORT = 777 } = process.env
 
 export default express()
+  .set('view engine', 'pug')
+  .set('views', 'templates')
   .use(morgan('dev'))
   .use(cors())
   .use('/static', express.static(join(__dirname, 'public')))
@@ -25,8 +37,9 @@ export default express()
   .use((_: express.Request, res: express.Response) => {
     return res
       .status(200)
-      .sendFile(join(__dirname, 'built', 'public', 'index.html'))
+      .sendFile(join(__dirname, 'public', 'index.html'))
   })
   .use(errorsHandler)
-  .listen(PORT, () => console.log(`I'm gonna poop on the plate, bratok...`))
+  .listen(PORT, () => console.log(`I'm gonna poop on the ${PORT}th plate, bratok...`))
 
+*/

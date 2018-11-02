@@ -1,0 +1,30 @@
+type Anime {
+  id: ID!
+  title: String!
+  year: Int!
+  isOnGoing: Boolean!
+  description: String!
+  rating: Float
+  episodes: [Episode!]!
+  genres: [Genre!]!
+  voices: [Voice!]!
+}
+
+input AnimeData {
+  title: String!
+  year: Int!
+  isOnGoing: Boolean!
+  description: String!
+  episodes: [Episode!]!
+  genres: [Genre!]!
+  voices: [Voice!]!
+}
+
+extend type Mutation {
+  addAnime (data: AnimeData): Boolean!
+  patchAnime (data: AnimeData)
+}
+
+extend type Subscription {
+
+}

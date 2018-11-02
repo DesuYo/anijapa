@@ -1,8 +1,9 @@
 import { Router } from 'express'
 import authHandler, { possiblePermissions } from '../services/auth.handler'
-import * as _ from '../services/validations.handler'
+import '../services/validations.handler'
 import { NotFoundError, PermissionError } from '../services/errors.handler'
 import { Request, Response } from '../helpers/types.import'
+import { validationHandler, SLUG, URI, NAME, ARRAY, ENUM } from '../services/validations.handler';
 
 export default Router()
   .get(
@@ -12,7 +13,6 @@ export default Router()
       try {
         const { user } = req
         return res
-          .status(200)
           .json(user)
         
       } catch (error) {
@@ -23,11 +23,11 @@ export default Router()
   .patch(
     '/me',
     authHandler('patch:basic', 'patch:admin'),
-    _.validationHandler({
-      username: _.SLUG(16),
-      photo: _.URI(256),
-      firstName: _.NAME(16),
-      lastName: _.NAME(16)
+    validationHandler({
+      username: SLUG(16),
+      photo: URI(256),
+      firstName: NAME(16),
+      lastName: NAME(16)
     }),
     async (req: Request, res: Response, next: Function) => {
       try {
@@ -90,12 +90,12 @@ export default Router()
   .patch(
     '/users/:id',
     authHandler('patch:admin'),
-    _.validationHandler({
-      permissions: _.ARRAY(_.ENUM(possiblePermissions)),
-      username: _.SLUG(16),
-      photo: _.URI(256),
-      firstName: _.NAME(16),
-      lastName: _.NAME(16)
+    validationHandler({
+      permissions: ARRAY(ENUM(possiblePermissions)),
+      username: SLUG(16),
+      photo: URI(256),
+      firstName: NAME(16),
+      lastName: NAME(16)
     }),
     async (req: Request, res: Response, next: Function) => {
       try {

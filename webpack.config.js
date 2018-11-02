@@ -9,6 +9,9 @@ module.exports = [
     externals: [excludeNodeModules()],
     mode: 'production',
     entry: './server/index.ts',
+    node: {
+      __dirname: false
+    },
     output: {
       filename: 'server.js',
       path: resolve(__dirname, 'built')
@@ -23,8 +26,7 @@ module.exports = [
     },
     resolve: {
       extensions: ['.ts', '.js']
-    },
-    watch: true
+    }
   },
   {
     target: 'web',
@@ -57,8 +59,7 @@ module.exports = [
         template: './client/index.html'
       }),
       new ExtractPlugin('style.css')
-    ],
-    watch: true
+    ]
   }
 ]
 
