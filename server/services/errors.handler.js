@@ -1,14 +1,14 @@
-import { Request, Response, JsonWebTokenError, TokenExpiredError, ValidationErrorItem } from '../helpers/types.import'
+import { JsonWebTokenError, TokenExpiredError } from '../helpers/types.import'
 
 export class NotFoundError extends Error {
-  constructor (msg: string) { super(msg) }
+  constructor (msg) { super(msg) }
 }
 
 export class PermissionError extends Error {
   constructor () { super('Permission denied for this action.') }
 }
 
-export default (error: any, _: Request, res: Response, __: Function) => {
+export default (error, _, res, __) => {
   try {
     switch (true) {
       case error instanceof JsonWebTokenError || error instanceof TokenExpiredError: return res
@@ -21,7 +21,7 @@ export default (error: any, _: Request, res: Response, __: Function) => {
         
       case error.isJoi: return res
         .status(400)
-        .json(error.details.map((err: ValidationErrorItem) => ({
+        .json(error.details.map((err) => ({
           key: err.context.key,
           message: err.message
         })))

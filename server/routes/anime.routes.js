@@ -1,4 +1,4 @@
-import { Router, Request, Response } from 'express'
+import { Router } from 'express'
 import authHandler from '../services/auth.handler'
 import * as _ from '../services/validations.handler'
 
@@ -6,10 +6,10 @@ export default Router()
   .post(
     '/',
     authHandler('admin'),
-    _.validationHandler({
+    validationHandler({
       
     }),
-    async (req: Request, res: Response, next: Function) => {
+    async (req, res, next) => {
       try {
         const { db, body } = req
         res

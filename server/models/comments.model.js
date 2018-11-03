@@ -1,9 +1,9 @@
-import * as mongoose from 'mongoose'
-import { MongooseSchema } from '../helpers/types.import'
+import mongoose, { Schema } from 'mongoose'
+//import {  } from '../helpers/types.import'
 
-const ID = mongoose.Schema.Types.ObjectId
+const ID = Schema.Types.ObjectId
 
-const commentSchema = new MongooseSchema({
+const commentSchema = new Schema({
   text: String,
   userId: { type: ID, ref: 'User' },
   animeId: { type: ID, ref: 'Anime' },

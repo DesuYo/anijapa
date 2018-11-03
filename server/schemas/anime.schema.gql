@@ -8,6 +8,7 @@ type Anime {
   episodes: [Episode!]!
   genres: [Genre!]!
   voices: [Voice!]!
+  comments: [Comment!]!
 }
 
 input AnimeData {
