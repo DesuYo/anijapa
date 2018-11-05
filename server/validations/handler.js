@@ -74,7 +74,6 @@ module.exports = class {
 
   addCredentialsValidation (credentials) {
     this.middlewares.push(async () => {
-      console.log(this.input)
       for (let key in credentials) 
         if (
           !this.input[key] ||
@@ -82,6 +81,7 @@ module.exports = class {
           !(await compare(credentials[key], this.input[key])))
         )
           throw new AuthenticationError('Invalid credentials')
+      return this.input
     })
     return this
   }
