@@ -1,4 +1,20 @@
-import { JsonWebTokenError, TokenExpiredError } from '../helpers/types.import'
+exports.InputValidationError = class extends Error {
+  constructor (details) {
+    super('Input validation error.')
+    this.status = 400
+    this.details = details
+  }
+}
+
+exports.ServerError = class extends Error {
+  constructor (details) {
+    super('Server error')
+    this.status = 500
+    this.details = details
+  }
+}
+
+/*import { JsonWebTokenError, TokenExpiredError } from '../helpers/types.import'
 
 export class NotFoundError extends Error {
   constructor (msg) { super(msg) }
@@ -41,4 +57,4 @@ export default (error, _, res, __) => {
       .status(500)
       .json({ error: error.message || error })
   }
-}
+}*/

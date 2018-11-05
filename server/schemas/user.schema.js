@@ -1,11 +1,12 @@
 const { gql } = require('apollo-server-express')
 
 module.exports = gql`
+  #directive @unique on FIELD_DEFINITION
   type User {
     id: ID!
     isBanned: Boolean!
-    email: String! @unique
-    username: String! @unique
+    email: String! 
+    username: String! 
     googleID: ID
     facebookID: ID
     photo: String

@@ -6,8 +6,5 @@ module.exports = {
   },
   Mutation: {
     ...user.mutations
-  },
-  Subscription: {
-
   }
 }

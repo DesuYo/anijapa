@@ -1,126 +1,4 @@
 "use strict";
-
-var unique = require('./unique.directive');
-
-module.exports = {
-  unique: unique
-};
-"use strict";
-
-function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
-
-function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
-function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
-
-function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
-
-function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
-
-function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
-
-function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
-
-var _require = require('apollo-server-express'),
-    SchemaDirectiveVisitor = _require.SchemaDirectiveVisitor;
-
-var _require2 = require('graphql'),
-    GraphQLDirective = _require2.GraphQLDirective,
-    DirectiveLocation = _require2.DirectiveLocation;
-
-module.exports =
-/*#__PURE__*/
-function (_SchemaDirectiveVisit) {
-  _inherits(UniqueDirective, _SchemaDirectiveVisit);
-
-  function UniqueDirective() {
-    _classCallCheck(this, UniqueDirective);
-
-    return _possibleConstructorReturn(this, _getPrototypeOf(UniqueDirective).apply(this, arguments));
-  }
-
-  _createClass(UniqueDirective, [{
-    key: "visitFieldDefinition",
-    value: function visitFieldDefinition(field, _ref) {
-      var _this = this;
-
-      var objectType = _ref.objectType;
-      var resolve = field.resolve,
-          name = field.name;
-      field.resolve =
-      /*#__PURE__*/
-      _asyncToGenerator(
-      /*#__PURE__*/
-      regeneratorRuntime.mark(function _callee() {
-        var _len,
-            args,
-            _key,
-            parent,
-            _,
-            db,
-            record,
-            _args = arguments;
-
-        return regeneratorRuntime.wrap(function _callee$(_context) {
-          while (1) {
-            switch (_context.prev = _context.next) {
-              case 0:
-                for (_len = _args.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
-                  args[_key] = _args[_key];
-                }
-
-                parent = args[0], _ = args[1], db = args[2].db;
-                _context.next = 4;
-                return db.collection(objectType.name + 's').findOne(_defineProperty({}, name, parent[name]));
-
-              case 4:
-                record = _context.sent;
-
-                if (!record) {
-                  _context.next = 7;
-                  break;
-                }
-
-                throw Error("".concat(objectType.name, " with this ").concat(name, " is already exist"));
-
-              case 7:
-                _context.next = 9;
-                return resolve.apply(_this, args);
-
-              case 9:
-                return _context.abrupt("return", _context.sent);
-
-              case 10:
-              case "end":
-                return _context.stop();
-            }
-          }
-        }, _callee, this);
-      }));
-    }
-  }], [{
-    key: "getDirectiveDeclaration",
-    value: function getDirectiveDeclaration() {
-      return new GraphQLDirective({
-        name: 'unique',
-        locations: [DirectiveLocation.FIELD_DEFINITION]
-      });
-    }
-  }]);
-
-  return UniqueDirective;
-}(SchemaDirectiveVisitor);
-"use strict";
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -212,7 +90,8 @@ var express = require('express');
 var _require2 = require('apollo-server-express'),
     ApolloServer = _require2.ApolloServer;
 
-var mongodb = require('mongodb');
+var _require3 = require('mongodb'),
+    MongoClient = _require3.MongoClient;
 
 var morgan = require('morgan');
 
@@ -220,14 +99,13 @@ var cors = require('cors');
 
 var typeDefs = require('./schemas/index.schema');
 
-var resolvers = require('./resolvers/index.resolvers');
-
-var schemaDirectives = require('./directives/index.directive');
+var resolvers = require('./resolvers/index.resolvers') //const schemaDirectives = require('./directives/index.directive')
+;
 
 _asyncToGenerator(
 /*#__PURE__*/
 regeneratorRuntime.mark(function _callee() {
-  var _process$env, PORT, NODE_ENV, DB_URI, app;
+  var _process$env, PORT, NODE_ENV, MONGO_URI, DB_NAME, mongoClient, db, app, graph;
 
   return regeneratorRuntime.wrap(function _callee$(_context) {
     while (1) {
@@ -235,47 +113,59 @@ regeneratorRuntime.mark(function _callee() {
         case 0:
           _context.prev = 0;
           dotenv.config();
-          _process$env = process.env, PORT = _process$env.PORT, NODE_ENV = _process$env.NODE_ENV, DB_URI = _process$env.DB_URI;
+          _process$env = process.env, PORT = _process$env.PORT, NODE_ENV = _process$env.NODE_ENV, MONGO_URI = _process$env.MONGO_URI, DB_NAME = _process$env.DB_NAME;
           _context.next = 5;
-          return mongodb.connect(DB_URI, {
+          return MongoClient.connect(MONGO_URI, {
             useNewUrlParser: true
           });
 
         case 5:
-          app = express().set('view engine', 'pug').set('views', 'pages').use(morgan('dev')).use(cors()).disable('x-powered-by').get('/static', express.static(join(__dirname, 'built', 'public'))).get('/', function (_, res) {
-            return res.sendFile(join(__dirname, 'public'));
-          });
-          new ApolloServer({
+          mongoClient = _context.sent;
+          db = mongoClient.db(DB_NAME);
+          app = express().set('view engine', 'pug').set('views', 'pages').use(morgan('dev')).use(cors()).disable('x-powered-by').get('/static', express.static(join(__dirname, 'built', 'public'))); //.get('/', (_, res) => res.sendFile(join(__dirname, 'public')))
+
+          graph = new ApolloServer({
             typeDefs: typeDefs,
             resolvers: resolvers,
-            schemaDirectives: schemaDirectives,
             context: function context(_ref2) {
               var req = _ref2.req;
               return {
-                user: req.user
+                user: req.user,
+                db: db
+              };
+            },
+            formatError: function formatError(_ref3) {
+              var message = _ref3.message,
+                  extensions = _ref3.extensions;
+              return {
+                message: message,
+                status: extensions.exception.status,
+                details: extensions.exception.details
               };
             },
             playground: NODE_ENV === 'dev'
-          }).applyMiddleware({
-            app: app
+          });
+          graph.applyMiddleware({
+            app: app,
+            path: '/graph'
           });
           app.listen(PORT || 777, function () {
             return console.log('ooooi, I am gonna poop on the plate...');
           });
-          _context.next = 13;
+          _context.next = 16;
           break;
 
-        case 10:
-          _context.prev = 10;
+        case 13:
+          _context.prev = 13;
           _context.t0 = _context["catch"](0);
           console.log(_context.t0);
 
-        case 13:
+        case 16:
         case "end":
           return _context.stop();
       }
     }
-  }, _callee, this, [[0, 10]]);
+  }, _callee, this, [[0, 13]]);
 }))();
 "use strict";
 
@@ -335,35 +225,9 @@ var _default = {
 exports.default = _default;
 "use strict";
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = void 0;
-
 var _mongoose = _interopRequireWildcard(require("mongoose"));
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = Object.defineProperty && Object.getOwnPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : {}; if (desc.get || desc.set) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } } newObj.default = obj; return newObj; } }
-
-//import {  } from '../helpers/types.import'
-var _default = _mongoose.default.model('user', new _mongoose.Schema({
-  googleID: {
-    type: String,
-    unique: true
-  },
-  permissions: [String],
-  username: {
-    type: String,
-    sparse: true
-  },
-  photo: String,
-  firstName: String,
-  lastName: String,
-  birthDate: Date
-}, {
-  timestamps: true
-}).pre("save", function () {}));
-
-exports.default = _default;
 "use strict";
 
 function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; var ownKeys = Object.keys(source); if (typeof Object.getOwnPropertySymbols === 'function') { ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) { return Object.getOwnPropertyDescriptor(source, sym).enumerable; })); } ownKeys.forEach(function (key) { _defineProperty(target, key, source[key]); }); } return target; }
@@ -374,8 +238,7 @@ var user = require('./user.resolver');
 
 module.exports = {
   Query: _objectSpread({}, user.queries),
-  Mutation: _objectSpread({}, user.mutations),
-  Subscription: {}
+  Mutation: _objectSpread({}, user.mutations)
 };
 "use strict";
 
@@ -383,9 +246,22 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
+function _objectWithoutProperties(source, excluded) { if (source == null) return {}; var target = _objectWithoutPropertiesLoose(source, excluded); var key, i; if (Object.getOwnPropertySymbols) { var sourceSymbolKeys = Object.getOwnPropertySymbols(source); for (i = 0; i < sourceSymbolKeys.length; i++) { key = sourceSymbolKeys[i]; if (excluded.indexOf(key) >= 0) continue; if (!Object.prototype.propertyIsEnumerable.call(source, key)) continue; target[key] = source[key]; } } return target; }
+
+function _objectWithoutPropertiesLoose(source, excluded) { if (source == null) return {}; var target = {}; var sourceKeys = Object.keys(source); var key, i; for (i = 0; i < sourceKeys.length; i++) { key = sourceKeys[i]; if (excluded.indexOf(key) >= 0) continue; target[key] = source[key]; } return target; }
+
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
 
 function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
+var _require = require('../validations/types'),
+    $SLUG = _require.$SLUG,
+    $EMAIL = _require.$EMAIL,
+    $PASSWORD = _require.$PASSWORD;
+
+var Chainer = require('../validations/handler');
+
+var jwt = require('jsonwebtoken');
 
 module.exports = {
   queries: {
@@ -397,15 +273,29 @@ module.exports = {
       var _signIn = _asyncToGenerator(
       /*#__PURE__*/
       regeneratorRuntime.mark(function _callee(_, _ref2, _ref3) {
-        var account, password, db;
+        var account, password, db, users;
         return regeneratorRuntime.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
                 account = _ref2.account, password = _ref2.password;
                 db = _ref3.db;
+                users = db.collection('users');
+                return _context.abrupt("return", new Chainer({
+                  account: account,
+                  password: password
+                }).addAction(function (_ref4) {
+                  var account = _ref4.account;
+                  return users.findOne({
+                    $or: [{
+                      email: account
+                    }, {
+                      username: account
+                    }]
+                  });
+                }));
 
-              case 2:
+              case 4:
               case "end":
                 return _context.stop();
             }
@@ -416,25 +306,48 @@ module.exports = {
       return function signIn(_x, _x2, _x3) {
         return _signIn.apply(this, arguments);
       };
-    }(),
-    filterUsers: function () {
-      var _filterUsers = _asyncToGenerator(
+    }()
+  },
+  mutations: {
+    signUp: function () {
+      var _signUp = _asyncToGenerator(
       /*#__PURE__*/
-      regeneratorRuntime.mark(function _callee2(_, _ref4, _ref5) {
-        var _ref4$emailPattern, email, _ref4$usernamePattern, username, profilePattern, db, user;
-
+      regeneratorRuntime.mark(function _callee2(_, _ref5, _ref6) {
+        var email, username, rest, db, users;
         return regeneratorRuntime.wrap(function _callee2$(_context2) {
           while (1) {
             switch (_context2.prev = _context2.next) {
               case 0:
-                _ref4$emailPattern = _ref4.emailPattern, email = _ref4$emailPattern === void 0 ? '' : _ref4$emailPattern, _ref4$usernamePattern = _ref4.usernamePattern, username = _ref4$usernamePattern === void 0 ? '' : _ref4$usernamePattern, profilePattern = _ref4.profilePattern;
-                db = _ref5.db, user = _ref5.user;
-                return _context2.abrupt("return", db.collection('users').find(_objectSpread({
+                email = _ref5.email, username = _ref5.username, rest = _objectWithoutProperties(_ref5, ["email", "username"]);
+                db = _ref6.db;
+                users = db.collection('users');
+                return _context2.abrupt("return", new Chainer(_objectSpread({
                   email: email,
                   username: username
-                }, profilePattern)));
+                }, rest)).addInputValidation({
+                  password: $PASSWORD(8),
+                  email: $EMAIL(),
+                  username: $SLUG(16)
+                }).addUniqueValidation(users, {
+                  email: email,
+                  username: username
+                }).addAction(function (user) {
+                  return users.insertOne(user);
+                }).exec(function (_ref7) {
+                  var insertedId = _ref7.insertedId;
+                  return {
+                    accessToken: jwt.sign({
+                      insertedId: insertedId
+                    }, process.env.JWT_SECRET, {
+                      expiresIn: '2h'
+                    }),
+                    refreshToken: jwt.sign({
+                      insertedId: insertedId
+                    }, process.env.JWT_SECRET)
+                  };
+                }));
 
-              case 3:
+              case 4:
               case "end":
                 return _context2.stop();
             }
@@ -442,33 +355,7 @@ module.exports = {
         }, _callee2, this);
       }));
 
-      return function filterUsers(_x4, _x5, _x6) {
-        return _filterUsers.apply(this, arguments);
-      };
-    }()
-  },
-  mutations: {
-    signUp: function () {
-      var _signUp = _asyncToGenerator(
-      /*#__PURE__*/
-      regeneratorRuntime.mark(function _callee3(_, args, _ref6) {
-        var db;
-        return regeneratorRuntime.wrap(function _callee3$(_context3) {
-          while (1) {
-            switch (_context3.prev = _context3.next) {
-              case 0:
-                db = _ref6.db;
-                return _context3.abrupt("return", db.collection('users').insertOne(args));
-
-              case 2:
-              case "end":
-                return _context3.stop();
-            }
-          }
-        }, _callee3, this);
-      }));
-
-      return function signUp(_x7, _x8, _x9) {
+      return function signUp(_x4, _x5, _x6) {
         return _signUp.apply(this, arguments);
       };
     }()
@@ -1118,7 +1005,7 @@ module.exports = [gql(_templateObject()), User];
 "use strict";
 
 function _templateObject() {
-  var data = _taggedTemplateLiteral(["\n  type User {\n    id: ID!\n    isBanned: Boolean!\n    email: String! @unique\n    username: String! @unique\n    googleID: ID\n    facebookID: ID\n    photo: String\n    firstName: String\n    lastName: String\n    birthday: String\n    #comments: [Comment!]\n  }\n\n  type AccessInfo {\n    accessToken: String!\n    refreshToken: String!\n  }\n\n  input UserProfileInput {\n    photo: String\n    firstName: String\n    lastName: String\n    birthday: String\n  }\n\n  extend type Query {\n    me: User!\n    signIn (account: String!, password: String!): AccessInfo\n    # only for admins\n    filterUsers (emailPattern: String, usernamePattern: String, profilePattern: UserProfileInput): [User]!\n    findUser (id: ID!): User\n  }\n\n  extend type Mutation {\n    signUp (password: String!, email: String!, username: String!): AccessInfo\n    patchMe (username: String, profile: UserProfileInput): User!\n    deleteMe (password: String): Boolean\n    # only for admins\n    banUser (id: ID!): Boolean!\n  }\n"]);
+  var data = _taggedTemplateLiteral(["\n  #directive @unique on FIELD_DEFINITION\n  type User {\n    id: ID!\n    isBanned: Boolean!\n    email: String! \n    username: String! \n    googleID: ID\n    facebookID: ID\n    photo: String\n    firstName: String\n    lastName: String\n    birthday: String\n    #comments: [Comment!]\n  }\n\n  type AccessInfo {\n    accessToken: String!\n    refreshToken: String!\n  }\n\n  input UserProfileInput {\n    photo: String\n    firstName: String\n    lastName: String\n    birthday: String\n  }\n\n  extend type Query {\n    me: User!\n    signIn (account: String!, password: String!): AccessInfo\n    # only for admins\n    filterUsers (emailPattern: String, usernamePattern: String, profilePattern: UserProfileInput): [User]!\n    findUser (id: ID!): User\n  }\n\n  extend type Mutation {\n    signUp (password: String!, email: String!, username: String!): AccessInfo\n    patchMe (username: String, profile: UserProfileInput): User!\n    deleteMe (password: String): Boolean\n    # only for admins\n    banUser (id: ID!): Boolean!\n  }\n"]);
 
   _templateObject = function _templateObject() {
     return data;
@@ -1377,71 +1264,6 @@ var _default = function _default() {
 exports.default = _default;
 "use strict";
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = void 0;
-
-var _mongoose = require("mongoose");
-
-var _index = _interopRequireDefault(require("../models/index.model"));
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
-
-function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
-
-var _default =
-/*#__PURE__*/
-function () {
-  var _ref = _asyncToGenerator(
-  /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee(req, _, next) {
-    var DB_URI;
-    return regeneratorRuntime.wrap(function _callee$(_context) {
-      while (1) {
-        switch (_context.prev = _context.next) {
-          case 0:
-            _context.prev = 0;
-            DB_URI = process.env.DB_URI;
-            _context.next = 4;
-            return (0, _mongoose.connect)(DB_URI, {
-              useNewUrlParser: true
-            });
-
-          case 4:
-            req.db = _index.default;
-            return _context.abrupt("return", next());
-
-          case 8:
-            _context.prev = 8;
-            _context.t0 = _context["catch"](0);
-            return _context.abrupt("return", next(_context.t0));
-
-          case 11:
-          case "end":
-            return _context.stop();
-        }
-      }
-    }, _callee, this, [[0, 8]]);
-  }));
-
-  return function (_x, _x2, _x3) {
-    return _ref.apply(this, arguments);
-  };
-}();
-
-exports.default = _default;
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = exports.PermissionError = exports.NotFoundError = void 0;
-
-var _types = require("../helpers/types.import");
-
 function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -1464,94 +1286,372 @@ function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || func
 
 function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
 
-var NotFoundError =
+exports.InputValidationError =
 /*#__PURE__*/
 function (_Error) {
-  _inherits(NotFoundError, _Error);
+  _inherits(_class, _Error);
 
-  function NotFoundError(msg) {
-    _classCallCheck(this, NotFoundError);
+  function _class(details) {
+    var _this;
 
-    return _possibleConstructorReturn(this, _getPrototypeOf(NotFoundError).call(this, msg));
+    _classCallCheck(this, _class);
+
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(_class).call(this, 'Input validation error.'));
+    _this.status = 400;
+    _this.details = details;
+    return _this;
   }
 
-  return NotFoundError;
+  return _class;
 }(_wrapNativeSuper(Error));
 
-exports.NotFoundError = NotFoundError;
-
-var PermissionError =
+exports.ServerError =
 /*#__PURE__*/
 function (_Error2) {
-  _inherits(PermissionError, _Error2);
+  _inherits(_class2, _Error2);
 
-  function PermissionError() {
-    _classCallCheck(this, PermissionError);
+  function _class2(details) {
+    var _this2;
 
-    return _possibleConstructorReturn(this, _getPrototypeOf(PermissionError).call(this, 'Permission denied for this action.'));
+    _classCallCheck(this, _class2);
+
+    _this2 = _possibleConstructorReturn(this, _getPrototypeOf(_class2).call(this, 'Server error'));
+    _this2.status = 500;
+    _this2.details = details;
+    return _this2;
   }
 
-  return PermissionError;
+  return _class2;
 }(_wrapNativeSuper(Error));
+/*import { JsonWebTokenError, TokenExpiredError } from '../helpers/types.import'
 
-exports.PermissionError = PermissionError;
+export class NotFoundError extends Error {
+  constructor (msg) { super(msg) }
+}
 
-var _default = function _default(error, _, res, __) {
+export class PermissionError extends Error {
+  constructor () { super('Permission denied for this action.') }
+}
+
+export default (error, _, res, __) => {
   try {
     switch (true) {
-      case error instanceof _types.JsonWebTokenError || error instanceof _types.TokenExpiredError:
-        return res.status(401).json({
-          error: error
-        });
+      case error instanceof JsonWebTokenError || error instanceof TokenExpiredError: return res
+        .status(401)
+        .json({ error })
 
-      case error instanceof PermissionError:
-        return res.status(403).json({
-          error: error.message
-        });
+      case error instanceof PermissionError: return res
+        .status(403)
+        .json({ error: error.message })
+        
+      case error.isJoi: return res
+        .status(400)
+        .json(error.details.map((err) => ({
+          key: err.context.key,
+          message: err.message
+        })))
+      
+      case error.name === 'MongoError' && error.code === 11000: return res
+        .status(400)
+        .json({ error: error.errmsg })
 
-      case error.isJoi:
-        return res.status(400).json(error.details.map(function (err) {
-          return {
-            key: err.context.key,
-            message: err.message
-          };
-        }));
-
-      case error.name === 'MongoError' && error.code === 11000:
-        return res.status(400).json({
-          error: error.errmsg
-        });
-
-      case error instanceof NotFoundError:
-        return res.status(404).json({
-          error: error.message
-        });
-
-      default:
-        throw error;
+      case error instanceof NotFoundError: return res
+        .status(404)
+        .json({ error: error.message })
+  
+      default: throw error
     }
   } catch (error) {
-    return res.status(500).json({
-      error: error.message || error
-    });
+    return res
+      .status(500)
+      .json({ error: error.message || error })
   }
-};
-
-exports.default = _default;
+}*/
 "use strict";
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.validationHandler = exports.$DATE = exports.DATE = exports.BOOL = exports.$UFLOAT = exports.UFLOAT = exports.$FLOAT = exports.FLOAT = exports.$UINT = exports.UINT = exports.$INT = exports.INT = exports.$PASSWORD = exports.PASSWORD = exports.$PHONE = exports.PHONE = exports.$EMAIL = exports.EMAIL = exports.$NAME = exports.NAME = exports.$URI = exports.URI = exports.$SLUG = exports.SLUG = exports.$ENUM = exports.ENUM = exports.$ARRAY = exports.ARRAY = exports.$GUID = exports.GUID = exports.$VARCHAR = exports.VARCHAR = void 0;
-
-var Joi = _interopRequireWildcard(require("joi"));
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = Object.defineProperty && Object.getOwnPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : {}; if (desc.get || desc.set) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } } newObj.default = obj; return newObj; } }
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
 
 function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+var Joi = require('joi');
+
+var _require = require('./errors'),
+    InputValidationError = _require.InputValidationError,
+    ServerError = _require.ServerError;
+
+module.exports =
+/*#__PURE__*/
+function () {
+  function _class() {
+    var input = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
+    _classCallCheck(this, _class);
+
+    this.middlewares = [];
+    this.input = input;
+    this.output = input;
+  }
+
+  _createClass(_class, [{
+    key: "exec",
+    value: function () {
+      var _exec = _asyncToGenerator(
+      /*#__PURE__*/
+      regeneratorRuntime.mark(function _callee() {
+        var callback,
+            _iteratorNormalCompletion,
+            _didIteratorError,
+            _iteratorError,
+            _iterator,
+            _step,
+            mw,
+            _args = arguments;
+
+        return regeneratorRuntime.wrap(function _callee$(_context) {
+          while (1) {
+            switch (_context.prev = _context.next) {
+              case 0:
+                callback = _args.length > 0 && _args[0] !== undefined ? _args[0] : null;
+                _context.prev = 1;
+                _iteratorNormalCompletion = true;
+                _didIteratorError = false;
+                _iteratorError = undefined;
+                _context.prev = 5;
+                _iterator = this.middlewares[Symbol.iterator]();
+
+              case 7:
+                if (_iteratorNormalCompletion = (_step = _iterator.next()).done) {
+                  _context.next = 18;
+                  break;
+                }
+
+                mw = _step.value;
+                _context.next = 11;
+                return mw();
+
+              case 11:
+                _context.t0 = _context.sent;
+
+                if (_context.t0) {
+                  _context.next = 14;
+                  break;
+                }
+
+                _context.t0 = this.output;
+
+              case 14:
+                this.output = _context.t0;
+
+              case 15:
+                _iteratorNormalCompletion = true;
+                _context.next = 7;
+                break;
+
+              case 18:
+                _context.next = 24;
+                break;
+
+              case 20:
+                _context.prev = 20;
+                _context.t1 = _context["catch"](5);
+                _didIteratorError = true;
+                _iteratorError = _context.t1;
+
+              case 24:
+                _context.prev = 24;
+                _context.prev = 25;
+
+                if (!_iteratorNormalCompletion && _iterator.return != null) {
+                  _iterator.return();
+                }
+
+              case 27:
+                _context.prev = 27;
+
+                if (!_didIteratorError) {
+                  _context.next = 30;
+                  break;
+                }
+
+                throw _iteratorError;
+
+              case 30:
+                return _context.finish(27);
+
+              case 31:
+                return _context.finish(24);
+
+              case 32:
+                if (callback) {
+                  _context.next = 34;
+                  break;
+                }
+
+                return _context.abrupt("return", this.output);
+
+              case 34:
+                return _context.abrupt("return", callback(this.output));
+
+              case 37:
+                _context.prev = 37;
+                _context.t2 = _context["catch"](1);
+
+                if (_context.t2 instanceof InputValidationError) {
+                  _context.next = 41;
+                  break;
+                }
+
+                throw new ServerError(_context.t2.message || _context.t2);
+
+              case 41:
+                throw _context.t2;
+
+              case 42:
+              case "end":
+                return _context.stop();
+            }
+          }
+        }, _callee, this, [[1, 37], [5, 20, 24, 32], [25,, 27, 31]]);
+      }));
+
+      return function exec() {
+        return _exec.apply(this, arguments);
+      };
+    }()
+  }, {
+    key: "addAction",
+    value: function addAction(callback) {
+      var _this = this;
+
+      this.middlewares.push(
+      /*#__PURE__*/
+      _asyncToGenerator(
+      /*#__PURE__*/
+      regeneratorRuntime.mark(function _callee2() {
+        return regeneratorRuntime.wrap(function _callee2$(_context2) {
+          while (1) {
+            switch (_context2.prev = _context2.next) {
+              case 0:
+                return _context2.abrupt("return", callback(_this.output));
+
+              case 1:
+              case "end":
+                return _context2.stop();
+            }
+          }
+        }, _callee2, this);
+      })));
+      return this;
+    }
+  }, {
+    key: "addUniqueValidation",
+    value: function addUniqueValidation(collection) {
+      var fields = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : this.input;
+      this.middlewares.push(
+      /*#__PURE__*/
+      _asyncToGenerator(
+      /*#__PURE__*/
+      regeneratorRuntime.mark(function _callee3() {
+        var filter, doc, details;
+        return regeneratorRuntime.wrap(function _callee3$(_context3) {
+          while (1) {
+            switch (_context3.prev = _context3.next) {
+              case 0:
+                filter = Object.keys(fields).map(function (key) {
+                  return _defineProperty({}, key, fields[key]);
+                });
+                _context3.next = 3;
+                return collection.findOne({
+                  $or: filter
+                });
+
+              case 3:
+                doc = _context3.sent;
+
+                if (!doc) {
+                  _context3.next = 7;
+                  break;
+                }
+
+                details = Object.keys(doc).filter(function (key) {
+                  return doc[key] === fields[key];
+                }).map(function (key) {
+                  return {
+                    key: key,
+                    message: "Document with this <".concat(key, "> already exist")
+                  };
+                });
+                throw new InputValidationError(details);
+
+              case 7:
+              case "end":
+                return _context3.stop();
+            }
+          }
+        }, _callee3, this);
+      })));
+      return this;
+    }
+  }, {
+    key: "addInputValidation",
+    value: function addInputValidation(schema) {
+      var input = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : this.input;
+      this.middlewares.push(
+      /*#__PURE__*/
+      _asyncToGenerator(
+      /*#__PURE__*/
+      regeneratorRuntime.mark(function _callee4() {
+        var _Joi$compile$options$, error, value;
+
+        return regeneratorRuntime.wrap(function _callee4$(_context4) {
+          while (1) {
+            switch (_context4.prev = _context4.next) {
+              case 0:
+                _Joi$compile$options$ = Joi.compile(schema).options({
+                  abortEarly: false,
+                  allowUnknown: true,
+                  stripUnknown: true
+                }).validate(input), error = _Joi$compile$options$.error, value = _Joi$compile$options$.value;
+
+                if (!error) {
+                  _context4.next = 3;
+                  break;
+                }
+
+                throw new InputValidationError(error.details.map(function (err) {
+                  return {
+                    key: err.context.key,
+                    message: err.message
+                  };
+                }));
+
+              case 3:
+                return _context4.abrupt("return", value);
+
+              case 4:
+              case "end":
+                return _context4.stop();
+            }
+          }
+        }, _callee4, this);
+      })));
+      return this;
+    }
+  }]);
+
+  return _class;
+}();
+"use strict";
+
+var Joi = require('joi');
 
 var STR = function STR(maxLength) {
   return Joi.string().trim().max(maxLength);
@@ -1563,33 +1663,25 @@ var NUM = function NUM(max) {
 
 var passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/;
 
-var VARCHAR = function VARCHAR(maxLength) {
+exports.VARCHAR = function (maxLength) {
   var def = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : undefined;
   return STR(maxLength).default(def);
 };
 
-exports.VARCHAR = VARCHAR;
-
-var $VARCHAR = function $VARCHAR(maxLength) {
+exports.$VARCHAR = function (maxLength) {
   return STR(maxLength).required();
 };
 
-exports.$VARCHAR = $VARCHAR;
-
-var GUID = function GUID() {
+exports.GUID = function () {
   var def = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : undefined;
   return STR(64).guid().default(def);
 };
 
-exports.GUID = GUID;
-
-var $GUID = function $GUID() {
+exports.$GUID = function () {
   return STR(64).guid().required();
 };
 
-exports.$GUID = $GUID;
-
-var ARRAY = function ARRAY() {
+exports.ARRAY = function () {
   for (var _len = arguments.length, type = new Array(_len), _key = 0; _key < _len; _key++) {
     type[_key] = arguments[_key];
   }
@@ -1597,9 +1689,7 @@ var ARRAY = function ARRAY() {
   return Joi.array().items(type).default([]);
 };
 
-exports.ARRAY = ARRAY;
-
-var $ARRAY = function $ARRAY() {
+exports.$ARRAY = function () {
   for (var _len2 = arguments.length, type = new Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
     type[_key2] = arguments[_key2];
   }
@@ -1607,9 +1697,7 @@ var $ARRAY = function $ARRAY() {
   return Joi.array().items(type).required();
 };
 
-exports.$ARRAY = $ARRAY;
-
-var ENUM = function ENUM() {
+exports.ENUM = function () {
   for (var _len3 = arguments.length, values = new Array(_len3), _key3 = 0; _key3 < _len3; _key3++) {
     values[_key3] = arguments[_key3];
   }
@@ -1617,9 +1705,7 @@ var ENUM = function ENUM() {
   return Joi.allow(values);
 };
 
-exports.ENUM = ENUM;
-
-var $ENUM = function $ENUM() {
+exports.$ENUM = function () {
   for (var _len4 = arguments.length, values = new Array(_len4), _key4 = 0; _key4 < _len4; _key4++) {
     values[_key4] = arguments[_key4];
   }
@@ -1627,215 +1713,122 @@ var $ENUM = function $ENUM() {
   return Joi.allow(values).required();
 };
 
-exports.$ENUM = $ENUM;
-
-var SLUG = function SLUG(maxLength) {
+exports.SLUG = function (maxLength) {
   var def = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : undefined;
   return STR(maxLength).token().lowercase().default(def);
 };
 
-exports.SLUG = SLUG;
-
-var $SLUG = function $SLUG(maxLength) {
+exports.$SLUG = function (maxLength) {
   return STR(maxLength).token().lowercase().required();
 };
 
-exports.$SLUG = $SLUG;
-
-var URI = function URI(maxLength) {
+exports.URI = function (maxLength) {
   var def = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : undefined;
   return STR(maxLength).uri({
     allowRelative: true
   }).default(def);
 };
 
-exports.URI = URI;
-
-var $URI = function $URI(maxLength) {
+exports.$URI = function (maxLength) {
   return STR(maxLength).uri({
     allowRelative: true
   }).required();
 };
 
-exports.$URI = $URI;
-
-var NAME = function NAME(maxLength) {
+exports.NAME = function (maxLength) {
   var def = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : undefined;
   return STR(maxLength).regex(/^[a-zA-Z]$/).default(def);
 };
 
-exports.NAME = NAME;
-
-var $NAME = function $NAME(maxLength) {
+exports.$NAME = function (maxLength) {
   return STR(maxLength).regex(/^[a-zA-Z]$/).required();
 };
 
-exports.$NAME = $NAME;
-
-var EMAIL = function EMAIL() {
+exports.EMAIL = function () {
   var def = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : undefined;
   return STR(64).email().default(def);
 };
 
-exports.EMAIL = EMAIL;
-
-var $EMAIL = function $EMAIL() {
+exports.$EMAIL = function () {
   return STR(64).email().required();
 };
 
-exports.$EMAIL = $EMAIL;
-
-var PHONE = function PHONE() {
+exports.PHONE = function () {
   var def = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : undefined;
   return STR(16).replace(/\(*\)*/g, '').regex(/^\+\d{11,12}$/).default(def);
 };
 
-exports.PHONE = PHONE;
-
-var $PHONE = function $PHONE() {
+exports.$PHONE = function () {
   return STR(16).replace(/\(*\)*/g, '').regex(/^\+\d{11,12}$/).required();
 };
 
-exports.$PHONE = $PHONE;
-
-var PASSWORD = function PASSWORD(minLength) {
+exports.PASSWORD = function (minLength) {
   var def = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : undefined;
   return STR(64).regex(passwordRegex).min(minLength).default(def);
 };
 
-exports.PASSWORD = PASSWORD;
-
-var $PASSWORD = function $PASSWORD(minLength) {
+exports.$PASSWORD = function (minLength) {
   return STR(64).regex(passwordRegex).min(minLength).required();
 };
 
-exports.$PASSWORD = $PASSWORD;
-
-var INT = function INT() {
+exports.INT = function () {
   var max = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : Math.pow(2, 32);
   var def = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : undefined;
   return NUM(max).integer().default(def);
 };
 
-exports.INT = INT;
-
-var $INT = function $INT() {
+exports.$INT = function () {
   var max = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : Math.pow(2, 32);
   return NUM(max).integer().required();
 };
 
-exports.$INT = $INT;
-
-var UINT = function UINT() {
+exports.UINT = function () {
   var max = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : Math.pow(2, 32);
   var def = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : undefined;
   return NUM(max).integer().positive().default(def);
 };
 
-exports.UINT = UINT;
-
-var $UINT = function $UINT() {
+exports.$UINT = function () {
   var max = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : Math.pow(2, 32);
   return NUM(max).integer().positive().required();
 };
 
-exports.$UINT = $UINT;
-
-var FLOAT = function FLOAT() {
+exports.FLOAT = function () {
   var max = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : Math.pow(2, 32);
   var precision = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 3;
   var def = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : undefined;
   return NUM(max).precision(precision).default(def);
 };
 
-exports.FLOAT = FLOAT;
-
-var $FLOAT = function $FLOAT() {
+exports.$FLOAT = function () {
   var max = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : Math.pow(2, 32);
   var precision = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 3;
   return NUM(max).precision(precision).required();
 };
 
-exports.$FLOAT = $FLOAT;
-
-var UFLOAT = function UFLOAT() {
+exports.UFLOAT = function () {
   var max = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : Math.pow(2, 32);
   var precision = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 3;
   var def = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : undefined;
   return NUM(max).precision(precision).positive().default(def);
 };
 
-exports.UFLOAT = UFLOAT;
-
-var $UFLOAT = function $UFLOAT() {
+exports.$UFLOAT = function () {
   var max = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : Math.pow(2, 32);
   var precision = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 3;
   return NUM(max).precision(precision).positive().required();
 };
 
-exports.$UFLOAT = $UFLOAT;
-
-var BOOL = function BOOL() {
+exports.BOOL = function () {
   var def = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : undefined;
   return Joi.boolean().default(def);
 };
 
-exports.BOOL = BOOL;
-
-var DATE = function DATE() {
+exports.DATE = function () {
   var def = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : undefined;
   return Joi.date().iso().default(def);
 };
 
-exports.DATE = DATE;
-
-var $DATE = function $DATE() {
+exports.$DATE = function () {
   return Joi.date().iso().required();
 };
-
-exports.$DATE = $DATE;
-
-var validationHandler = function validationHandler(sample) {
-  return (
-    /*#__PURE__*/
-    function () {
-      var _ref = _asyncToGenerator(
-      /*#__PURE__*/
-      regeneratorRuntime.mark(function _callee(req, _, next) {
-        var _Joi$compile$options$, error, value;
-
-        return regeneratorRuntime.wrap(function _callee$(_context) {
-          while (1) {
-            switch (_context.prev = _context.next) {
-              case 0:
-                _context.prev = 0;
-                _Joi$compile$options$ = Joi.compile(sample).options({
-                  abortEarly: false,
-                  allowUnknown: true,
-                  stripUnknown: true
-                }).validate(req.body), error = _Joi$compile$options$.error, value = _Joi$compile$options$.value;
-                if (error) next(error);
-                req.body = value;
-                return _context.abrupt("return", next());
-
-              case 7:
-                _context.prev = 7;
-                _context.t0 = _context["catch"](0);
-                next(_context.t0);
-
-              case 10:
-              case "end":
-                return _context.stop();
-            }
-          }
-        }, _callee, this, [[0, 7]]);
-      }));
-
-      return function (_x, _x2, _x3) {
-        return _ref.apply(this, arguments);
-      };
-    }()
-  );
-};
-
-exports.validationHandler = validationHandler;

@@ -5,7 +5,7 @@
   "main": "built/server.js",
   "scripts": {
     "build": "webpack-cli",
-    "start": "webpack-cli && nodemon built/server.js",
+    "start": "nodemon server",
     "test": "jest --watchAll",
     "watch-ts": "tsc -w",
     "watch-node": "nodemon dist/server.js",
