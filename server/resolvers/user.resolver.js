@@ -11,7 +11,11 @@ module.exports = {
         .addAction(({ account }) => users.findOne({
           $or: [{ email: account }, { username: account }]
         }))
-        //in proccess
+        .addCredentialsValidation({ password })
+        .exec(({ _id }) => ({
+          accessToken: jwt.sign({ id: _id }, process.env.JWT_SECRET, { expiresIn: '2h' }),
+          refreshToken: jwt.sign({ id: _id }, process.env.JWT_SECRET)
+        }))
     }
   },
   mutations: {
@@ -26,8 +30,8 @@ module.exports = {
         .addUniqueValidation(users, { email, username })
         .addAction(user => users.insertOne(user))
         .exec(({ insertedId }) => ({ 
-          accessToken: jwt.sign({ insertedId }, process.env.JWT_SECRET, { expiresIn: '2h' }),
-          refreshToken: jwt.sign({ insertedId }, process.env.JWT_SECRET)
+          accessToken: jwt.sign({ id: insertedId }, process.env.JWT_SECRET, { expiresIn: '2h' }),
+          refreshToken: jwt.sign({ id: insertedId }, process.env.JWT_SECRET)
         }))
     }
   }

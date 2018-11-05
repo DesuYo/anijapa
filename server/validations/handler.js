@@ -1,22 +1,22 @@
 const Joi = require('joi')
-const { InputValidationError, ServerError } = require('./errors')
+const { InputValidationError, ServerError, AuthenticationError } = require('./errors')
+const { compare } = require('bcryptjs')
 
 module.exports = class { 
   constructor (input = {}) {
     this.middlewares = []
     this.input = input
-    this.output = input
   }
 
   async exec (callback = null) {
     try {
       for (let mw of this.middlewares) 
-        this.output = await mw() || this.output
+        this.input = await mw() || {}
       if (!callback) 
-        return this.output
-      return callback(this.output)
+        return this.input
+      return callback(this.input)
     } catch (error) {
-      if (!(error instanceof InputValidationError))
+      if (!(error instanceof InputValidationError) && !(error instanceof AuthenticationError))
         throw new ServerError(error.message || error)
       throw error
     }
@@ -24,7 +24,7 @@ module.exports = class {
 
   addAction (callback) {
     this.middlewares.push(
-      async () => callback(this.output)
+      async () => callback(this.input)
     )
     return this
   }
@@ -46,6 +46,7 @@ module.exports = class {
           }))
         throw new InputValidationError(details)
       }
+      return this.input
     })
     return this
   }
@@ -71,4 +72,17 @@ module.exports = class {
     return this
   }
 
+  addCredentialsValidation (credentials) {
+    this.middlewares.push(async () => {
+      console.log(this.input)
+      for (let key in credentials) 
+        if (
+          !this.input[key] ||
+          (this.input[key] !== credentials[key] && 
+          !(await compare(credentials[key], this.input[key])))
+        )
+          throw new AuthenticationError('Invalid credentials')
+    })
+    return this
+  }
 }

@@ -14,6 +14,14 @@ exports.ServerError = class extends Error {
   }
 }
 
+exports.AuthenticationError = class extends Error {
+  constructor (details) {
+    super('Authentication error')
+    this.status = 401
+    this.details = details
+  }
+}
+
 /*import { JsonWebTokenError, TokenExpiredError } from '../helpers/types.import'
 
 export class NotFoundError extends Error {
