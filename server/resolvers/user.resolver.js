@@ -23,7 +23,7 @@ module.exports = {
           password: $PASSWORD(8),
           email: $EMAIL(),
           username: $SLUG(16)
-        }, args)
+        }, { email, username, password })
         .addUniqueFields({ email, username }) // 2
         .insert(data => data[1]) // 3
         .exec(data => ({
