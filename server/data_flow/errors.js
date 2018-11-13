@@ -4,6 +4,12 @@ exports.InputValidationError = class extends Error {
     this.status = 400
     this.details = details
   }
+  show () {
+    return this.details.map(err => ({
+      key: err.context.key,
+      message: err.message
+    }))
+  }
 }
 
 exports.ServerError = class extends Error {
@@ -14,11 +20,17 @@ exports.ServerError = class extends Error {
   }
 }
 
-exports.AuthenticationError = class extends Error {
+exports.AuthError = class extends Error {
   constructor (details) {
     super('Authentication error')
     this.status = 401
     this.details = details
+  }
+}
+
+exports.CompareError = class extends Error {
+  constructor (details) {
+    super(details)
   }
 }
 
