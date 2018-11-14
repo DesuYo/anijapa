@@ -20,4 +20,15 @@ module.exports = gql `
     sequenceNumber: Int!
     description: String
   }
+
+  extend type Query {
+    #only for admins
+    filterComments(userId: ID, username: String, text: String): [Comment]!
+  }
+
+  extend type Mutation {
+    postComment (userId: ID!, text: String!): Comment
+    patchComment (userId: ID!): Comment!
+    deleteComment(userId: ID!, commentId: ID!): Boolean
+  }
 `

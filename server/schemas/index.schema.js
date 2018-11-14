@@ -1,5 +1,6 @@
 const { gql } = require('apollo-server-express')
 const User = require('./user.schema')
+const Comment = require('./comment.schema')
 
 
 module.exports = [
@@ -8,5 +9,6 @@ module.exports = [
     type Mutation { _: Int },
     type Subscription { _: Int }
   `,
-  User
+  User,
+  Comment
 ]
